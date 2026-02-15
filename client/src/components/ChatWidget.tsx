@@ -121,6 +121,12 @@ export default function ChatWidget() {
 
           if (data.type === 'error') {
             renderMessage(data.message || 'Ha ocurrido un error', 'system');
+            return;
+          }
+
+          if (data.type === 'proactive') {
+            renderMessage(data.data?.response || '¿Hay algo en lo que pueda ayudarte?', 'assistant');
+            return;
           }
         } catch {
           renderMessage(event.data, 'assistant');

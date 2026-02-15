@@ -30,13 +30,26 @@ export default function Beneficios({
   ]
 }: BeneficiosProps) {
   return (
-    <section id="beneficios" className="benefits">
-      <div className="container">
-        <h2>{title}</h2>
-        <div className="benefits-grid">
-          {benefits.map(({ icon, title, description }) => (
-            <article className="benefit-card" key={title}>
-              <div className="benefit-icon">
+    <section id="beneficios" className="py-20 px-6 md:px-8 bg-slate-50 relative overflow-hidden">
+      {/* Elementos decorativos con animación */}
+      <div className="absolute left-0 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
+      <div className="absolute right-0 w-72 h-72 bg-indigo-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+      <div className="absolute top-1/2 left-1/4 w-3 h-3 bg-cyan-400/20 rounded-full animate-ping" />
+      <div className="absolute bottom-1/3 right-1/4 w-2 h-2 bg-blue-400/20 rounded-full animate-ping" style={{ animationDelay: '0.5s' }} />
+      
+      <header className="text-center mb-12 relative">
+        <h2 className="text-3xl md:text-4xl font-bold text-slate-800">{title}</h2>
+        <div className="w-24 h-1.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 rounded-full mx-auto mt-4" />
+      </header>
+      
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {benefits.map(({ icon, title, description }, index) => (
+          <article key={title} className="p-8 bg-white rounded-2xl border border-slate-200 hover:-translate-y-2 hover:shadow-2xl hover:shadow-blue-500/15 transition-all duration-300 group relative overflow-hidden">
+            {/* Gradiente decorativo en hover */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-transparent to-indigo-50 opacity-0 group-hover:opacity-100 transition-opacity" />
+            
+            <div className="relative z-10">
+              <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-xl flex items-center justify-center mb-6 shadow-lg shadow-blue-600/30 group-hover:scale-110 transition-transform">
                 <svg 
                   width="24" 
                   height="24" 
@@ -47,86 +60,12 @@ export default function Beneficios({
                   dangerouslySetInnerHTML={{ __html: icon }}
                 />
               </div>
-              <h3>{title}</h3>
-              <p>{description}</p>
-            </article>
-          ))}
-        </div>
+              <h3 className="text-xl font-bold text-slate-800 mb-3 group-hover:text-blue-600 transition-colors">{title}</h3>
+              <p className="text-slate-600 leading-relaxed">{description}</p>
+            </div>
+          </article>
+        ))}
       </div>
-
-      <style>{`
-        .benefits {
-          padding: 5rem 2rem;
-          background: var(--bg-primary);
-          width: 100%;
-        }
-
-        .container {
-          max-width: 1200px;
-          margin: 0 auto;
-        }
-
-        .benefits h2 {
-          text-align: center;
-          font-size: clamp(2rem, 4vw, 2.5rem);
-          font-weight: 700;
-          margin-bottom: 3rem;
-          color: var(--text-primary);
-        }
-
-        .benefits-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 2rem;
-        }
-
-        .benefit-card {
-          padding: 2rem;
-          background: var(--bg-secondary);
-          border-radius: var(--radius-lg);
-          border: 1px solid var(--border);
-          transition: var(--transition);
-        }
-
-        .benefit-card:hover {
-          transform: translateY(-4px);
-          box-shadow: var(--shadow-md);
-          border-color: var(--primary-light);
-        }
-
-        .benefit-icon {
-          width: 48px;
-          height: 48px;
-          background: var(--primary);
-          color: white;
-          border-radius: var(--radius);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin-bottom: 1.5rem;
-        }
-
-        .benefit-card h3 {
-          font-size: 1.25rem;
-          margin-bottom: 0.75rem;
-          color: var(--text-primary);
-        }
-
-        .benefit-card p {
-          color: var(--text-secondary);
-          line-height: 1.6;
-        }
-
-        @media (max-width: 768px) {
-          .benefits {
-            padding: 3rem 1.5rem;
-          }
-
-          .benefits-grid {
-            grid-template-columns: 1fr;
-          }
-        }
-      `}</style>
     </section>
   );
 }

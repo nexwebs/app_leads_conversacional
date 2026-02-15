@@ -90,18 +90,28 @@ export default function Products() {
 
   return (
     <>
-      <section id="productos" className="products-section">
-        <div className="products-background"></div>
-        <div className="products-overlay"></div>
+      <section id="productos" className="relative py-20 px-6 md:px-8 overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/image3.png')] bg-cover bg-center bg-no-repeat z-0 scale-105" />
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-blue-950/40 to-slate-950 z-0" />
         
-        <div className="container">
-          <header className="section-header">
-            <h2>Nuestros Productos</h2>
-            <p className="section-subtitle">Soluciones profesionales adaptadas a tu negocio</p>
+        {/* Overlay de luz */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-indigo-600/20 via-transparent to-transparent z-0" />
+        
+        {/* Elementos decorativos varoniles con animación */}
+        <div className="absolute top-10 left-10 w-72 h-72 bg-blue-600/20 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-10 right-10 w-96 h-96 bg-indigo-600/15 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-1/4 left-1/4 w-4 h-4 bg-cyan-400/30 rounded-full animate-ping" />
+        <div className="absolute bottom-1/4 right-1/4 w-3 h-3 bg-blue-400/30 rounded-full animate-ping" style={{ animationDelay: '0.7s' }} />
+        
+        <div className="relative z-10">
+          <header className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">Nuestros Productos</h2>
+            <p className="text-lg text-slate-300 max-w-[600px] mx-auto">Soluciones profesionales adaptadas a tu negocio</p>
+            <div className="w-24 h-1.5 bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-500 rounded-full mx-auto mt-4" />
           </header>
 
           {error && (
-            <div className="error-notice">
+            <div className="flex items-center gap-3 px-5 py-4 bg-red-500/10 border border-red-500 rounded-lg text-red-500 mb-8 max-w-[1200px] mx-auto">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="12" cy="12" r="10"/>
                 <line x1="12" y1="8" x2="12" y2="12"/>
@@ -111,11 +121,11 @@ export default function Products() {
             </div>
           )}
 
-          <div className="products-grid">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {products.map((product) => (
-              <article className="product-card" key={product.id || product.nombre}>
-                <div className="card-content">
-                  <div className="product-icon">
+              <article key={product.id || product.nombre} className="bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl overflow-hidden flex flex-col shadow-xl hover:shadow-2xl hover:shadow-indigo-500/20 hover:-translate-y-2 transition-all duration-300 group">
+                <div className="p-8 flex-1 flex flex-col">
+                  <div className="w-14 h-14 bg-gradient-to-br from-blue-600 via-indigo-600 to-cyan-600 text-white rounded-xl flex items-center justify-center mb-5 shadow-lg shadow-blue-600/30 group-hover:scale-110 transition-transform">
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M12 2L2 7l10 5 10-5-10-5z"/>
                       <path d="M2 17l10 5 10-5"/>
@@ -123,14 +133,14 @@ export default function Products() {
                     </svg>
                   </div>
                   
-                  <h3>{product.nombre}</h3>
-                  <p className="description">{product.descripcion_corta}</p>
+                  <h3 className="text-xl font-bold text-slate-800 mb-3 break-words">{product.nombre}</h3>
+                  <p className="text-slate-600 text-sm leading-relaxed mb-6 break-words">{product.descripcion_corta}</p>
 
                   {product.features?.length > 0 && (
-                    <ul className="features-list">
+                    <ul className="flex flex-col gap-3 mt-auto">
                       {product.features.slice(0, 4).map((feature, index) => (
-                        <li key={index}>
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                        <li key={index} className="flex items-start gap-3 text-slate-600 text-sm break-words">
+                          <svg className="text-blue-600 flex-shrink-0 mt-0.5" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
                             <polyline points="20 6 9 17 4 12"/>
                           </svg>
                           <span>{feature}</span>
@@ -140,21 +150,21 @@ export default function Products() {
                   )}
                 </div>
 
-                <div className="card-footer">
-                  <div className="price-info">
-                    <span className="price-label">Desde</span>
-                    <span className="price-value">S/ {formatPrice(product.precio_base)}</span>
+                <div className="px-8 py-6 border-t border-slate-100 bg-slate-50">
+                  <div className="flex items-baseline gap-2 mb-4">
+                    <span className="text-sm text-slate-500">Desde</span>
+                    <span className="text-2xl font-extrabold text-blue-600 break-words">S/ {formatPrice(product.precio_base)}</span>
                   </div>
                   {product.paquetes?.length > 0 ? (
                     <button 
-                      className="btn-view-plans" 
+                      className="w-full py-3.5 bg-blue-600 text-white border-none rounded-lg text-sm font-semibold cursor-pointer hover:bg-blue-700 hover:-translate-y-0.5 transition-all"
                       onClick={() => openModal(product)}
                     >
                       Ver Planes
                     </button>
                   ) : (
                     <button 
-                      className="btn-direct-chat" 
+                      className="w-full py-3.5 bg-blue-600 text-white border-none rounded-lg text-sm font-semibold cursor-pointer hover:bg-blue-700 hover:-translate-y-0.5 transition-all"
                       onClick={() => handleDirectChat(product.nombre, product.precio_base)}
                     >
                       Comenzar Ahora
@@ -168,34 +178,34 @@ export default function Products() {
       </section>
 
       {selectedProduct && (
-        <div id="plansModal" className="modal active">
-          <div className="modal-overlay" onClick={closeModal}></div>
-          <div className="modal-content">
-            <button className="modal-close" onClick={closeModal} aria-label="Cerrar">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={closeModal} />
+          <div className="relative bg-white rounded-2xl max-w-[900px] w-full max-h-[85vh] overflow-y-auto shadow-2xl animate-modal">
+            <button className="absolute top-4 right-4 w-9 h-9 bg-slate-100 border border-slate-200 rounded-full flex items-center justify-center cursor-pointer hover:bg-red-500 hover:text-white hover:border-red-500 transition-all z-10" onClick={closeModal} aria-label="Cerrar">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <line x1="18" y1="6" x2="6" y2="18"/>
                 <line x1="6" y1="6" x2="18" y2="18"/>
               </svg>
             </button>
 
-            <div className="modal-header">
-              <div className="modal-product-icon">
+            <div className="p-8 border-b-2 border-slate-100 text-center bg-gradient-to-b from-slate-50 to-white">
+              <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-purple-600 text-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M12 2L2 7l10 5 10-5-10-5z"/>
                   <path d="M2 17l10 5 10-5"/>
                   <path d="M2 12l10 5 10-5"/>
                 </svg>
               </div>
-              <h3>{selectedProduct.nombre}</h3>
-              <p>{selectedProduct.descripcion_corta}</p>
+              <h3 className="text-2xl font-extrabold text-slate-800 mb-2 break-words">{selectedProduct.nombre}</h3>
+              <p className="text-slate-600 text-sm max-w-[600px] mx-auto leading-relaxed break-words">{selectedProduct.descripcion_corta}</p>
             </div>
 
-            <div className="plans-container">
-              <div className="plans-grid">
+            <div className="p-6 bg-slate-50">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 {selectedProduct.paquetes.map((paquete, index) => (
-                  <div className={`plan-card ${paquete.destacado ? 'destacado' : ''}`} key={index}>
+                  <div key={index} className={`relative bg-white border-2 rounded-xl p-6 transition-all hover:-translate-y-1 hover:shadow-lg ${paquete.destacado ? 'border-blue-600 bg-gradient-to-br from-blue-50/50 to-purple-50/50 shadow-md' : 'border-slate-200'}`}>
                     {paquete.destacado && (
-                      <div className="plan-badge">
+                      <div className="absolute -top-3 right-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs font-bold px-4 py-1.5 rounded-full flex items-center gap-1 shadow-lg tracking-wide uppercase">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                           <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
                         </svg>
@@ -203,34 +213,34 @@ export default function Products() {
                       </div>
                     )}
                     
-                    <div className="plan-content-wrapper">
-                      <div className="plan-name">{paquete.nombre}</div>
+                    <div>
+                      <div className="text-xl font-extrabold text-slate-800 mb-4 leading-tight break-words">{paquete.nombre}</div>
                       
-                      <div className="plan-pricing">
-                        <div className="price-main">
-                          S/ {paquete.precio_mensual.toLocaleString('es-PE', { minimumFractionDigits: 2 })}
-                          <span className="price-period">/mes</span>
+                      <div className="mb-5 pb-5 border-b-2 border-slate-100">
+                        <div className="flex items-baseline flex-wrap gap-1 mb-2">
+                          <span className="text-3xl font-black text-blue-600 leading-none">S/ {paquete.precio_mensual.toLocaleString('es-PE', { minimumFractionDigits: 2 })}</span>
+                          <span className="text-sm text-slate-500 font-medium">/mes</span>
                         </div>
                         {paquete.precio_anual && (
-                          <div className="price-annual">
+                          <div className="flex items-center gap-2 py-2.5 px-3.5 bg-slate-50 rounded-lg text-sm text-slate-600">
                             <span>S/ {paquete.precio_anual.toLocaleString('es-PE', { minimumFractionDigits: 2 })}/año</span>
-                            <span className="save-badge">Ahorra 20%</span>
+                            <span className="bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">Ahorra 20%</span>
                           </div>
                         )}
                       </div>
 
                       {paquete.ideal_para?.length && (
-                        <div className="ideal-for">
-                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <div className="flex items-start gap-2.5 p-4 bg-slate-50 rounded-lg text-sm text-slate-600 border border-slate-100 leading-relaxed mb-4 break-words">
+                          <svg className="text-blue-600 flex-shrink-0 mt-0.5" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                             <circle cx="12" cy="7" r="4"/>
                           </svg>
-                          <span><strong>Ideal para:</strong> {paquete.ideal_para.map(item => item.replace(/_/g, ' ')).join(' · ')}</span>
+                          <span><strong className="font-semibold">Ideal para:</strong> {paquete.ideal_para.map(item => item.replace(/_/g, ' ')).join(' · ')}</span>
                         </div>
                       )}
 
                       <button 
-                        className="btn-select-plan" 
+                        className="w-full py-3.5 bg-blue-600 text-white border-none rounded-lg text-sm font-bold cursor-pointer hover:bg-blue-700 hover:-translate-y-0.5 transition-all shadow-md"
                         onClick={() => handleSelectPlan(selectedProduct.nombre, paquete.nombre)}
                       >
                         Seleccionar Plan
@@ -245,242 +255,6 @@ export default function Products() {
       )}
 
       <style>{`
-        .products-section {
-          position: relative;
-          padding: 5rem 2rem;
-          width: 100%;
-          overflow: hidden;
-          min-height: auto;
-        }
-
-        .products-background {
-          position: absolute;
-          inset: 0;
-          background-image: url('/image3.png');
-          background-size: cover;
-          background-position: center;
-          background-repeat: no-repeat;
-          z-index: 0;
-        }
-
-        .products-overlay {
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(
-            180deg,
-            rgba(15, 23, 42, 0.92) 0%,
-            rgba(15, 23, 42, 0.88) 50%,
-            rgba(15, 23, 42, 0.92) 100%
-          );
-          z-index: 1;
-        }
-
-        .container {
-          position: relative;
-          z-index: 2;
-          max-width: 1200px;
-          margin: 0 auto;
-        }
-
-        .section-header {
-          text-align: center;
-          margin-bottom: 3rem;
-        }
-
-        .section-header h2 {
-          font-size: clamp(2rem, 4vw, 2.5rem);
-          font-weight: 700;
-          color: white;
-          margin-bottom: 0.75rem;
-        }
-
-        .section-subtitle {
-          font-size: 1.125rem;
-          color: rgba(255, 255, 255, 0.8);
-          max-width: 600px;
-          margin: 0 auto;
-        }
-
-        .error-notice {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          padding: 1rem 1.25rem;
-          background: rgba(239, 68, 68, 0.1);
-          border: 1px solid var(--error);
-          border-radius: var(--radius);
-          color: var(--error);
-          margin-bottom: 2rem;
-        }
-
-        .products-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 2rem;
-        }
-
-        .product-card {
-          background: rgba(255, 255, 255, 0.95);
-          backdrop-filter: blur(10px);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          border-radius: var(--radius-lg);
-          overflow: hidden;
-          transition: var(--transition);
-          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-          display: flex;
-          flex-direction: column;
-          height: 100%;
-        }
-
-        .product-card:hover {
-          transform: translateY(-8px) scale(1.02);
-          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-          border-color: var(--primary-light);
-        }
-
-        .product-card:hover .btn-view-plans,
-        .product-card:hover .btn-direct-chat {
-          transform: scale(1.05);
-        }
-
-        .card-content {
-          padding: 2rem;
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-        }
-
-        .product-icon {
-          width: 56px;
-          height: 56px;
-          background: linear-gradient(135deg, var(--primary), var(--accent));
-          color: white;
-          border-radius: var(--radius-lg);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin-bottom: 1.25rem;
-        }
-
-        .product-card h3 {
-          font-size: 1.5rem;
-          font-weight: 700;
-          color: var(--text-primary);
-          margin-bottom: 0.75rem;
-          word-break: break-word;
-          hyphens: auto;
-        }
-
-        .description {
-          color: var(--text-secondary);
-          font-size: 0.95rem;
-          line-height: 1.6;
-          margin-bottom: 1.5rem;
-          word-break: break-word;
-        }
-
-        .features-list {
-          list-style: none;
-          display: flex;
-          flex-direction: column;
-          gap: 0.75rem;
-          margin-top: auto;
-        }
-
-        .features-list li {
-          display: flex;
-          align-items: flex-start;
-          gap: 0.75rem;
-          color: var(--text-secondary);
-          font-size: 0.9rem;
-          word-break: break-word;
-        }
-
-        .features-list svg {
-          color: var(--primary);
-          flex-shrink: 0;
-          margin-top: 2px;
-        }
-
-        .card-footer {
-          padding: 1.5rem 2rem;
-          border-top: 1px solid var(--border-light);
-          background: var(--bg-secondary);
-        }
-
-        .price-info {
-          display: flex;
-          align-items: baseline;
-          gap: 0.5rem;
-          margin-bottom: 1rem;
-        }
-
-        .price-label {
-          font-size: 0.875rem;
-          color: var(--text-muted);
-        }
-
-        .price-value {
-          font-size: 1.75rem;
-          font-weight: 800;
-          color: var(--primary);
-          word-break: break-word;
-        }
-
-        .btn-view-plans,
-        .btn-direct-chat {
-          width: 100%;
-          padding: 0.875rem;
-          background: var(--primary);
-          color: white;
-          border: none;
-          border-radius: var(--radius);
-          font-size: 0.95rem;
-          font-weight: 600;
-          cursor: pointer;
-          transition: var(--transition);
-        }
-
-        .btn-view-plans:hover,
-        .btn-direct-chat:hover {
-          background: var(--primary-dark);
-          transform: translateY(-2px);
-          box-shadow: var(--shadow-md);
-        }
-
-        .modal {
-          display: none;
-          position: fixed;
-          inset: 0;
-          z-index: 1000;
-          align-items: center;
-          justify-content: center;
-          padding: 1rem;
-        }
-
-        .modal.active {
-          display: flex;
-        }
-
-        .modal-overlay {
-          position: absolute;
-          inset: 0;
-          background: rgba(0, 0, 0, 0.6);
-          backdrop-filter: blur(8px);
-        }
-
-        .modal-content {
-          position: relative;
-          background: var(--bg-primary);
-          border-radius: var(--radius-xl);
-          max-width: 900px;
-          width: 100%;
-          max-height: 85vh;
-          overflow-y: auto;
-          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-          animation: modalSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
         @keyframes modalSlideIn {
           from {
             opacity: 0;
@@ -491,289 +265,8 @@ export default function Products() {
             transform: scale(1) translateY(0);
           }
         }
-
-        .modal-close {
-          position: absolute;
-          top: 1rem;
-          right: 1rem;
-          width: 36px;
-          height: 36px;
-          background: var(--bg-secondary);
-          border: 1px solid var(--border);
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          transition: var(--transition);
-          z-index: 10;
-        }
-
-        .modal-close:hover {
-          background: var(--error);
-          color: white;
-          border-color: var(--error);
-          transform: rotate(90deg);
-        }
-
-        .modal-header {
-          padding: 2rem 1.5rem 1.5rem;
-          border-bottom: 2px solid var(--border-light);
-          text-align: center;
-          background: linear-gradient(to bottom, var(--bg-secondary), var(--bg-primary));
-        }
-
-        .modal-product-icon {
-          width: 56px;
-          height: 56px;
-          background: linear-gradient(135deg, var(--primary), var(--accent));
-          color: white;
-          border-radius: var(--radius-xl);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin: 0 auto 1rem;
-          box-shadow: var(--shadow-md);
-        }
-
-        .modal-header h3 {
-          font-size: 1.5rem;
-          font-weight: 800;
-          color: var(--text-primary);
-          margin-bottom: 0.5rem;
-          word-break: break-word;
-          hyphens: auto;
-        }
-
-        .modal-header p {
-          color: var(--text-secondary);
-          font-size: 0.95rem;
-          max-width: 600px;
-          margin: 0 auto;
-          line-height: 1.5;
-          word-break: break-word;
-        }
-
-        .plans-container {
-          padding: 1.5rem;
-          background: var(--bg-secondary);
-        }
-
-        .plans-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-          gap: 1.25rem;
-          align-items: stretch;
-        }
-
-        .plan-card {
-          background: var(--bg-primary);
-          border: 2px solid var(--border);
-          border-radius: var(--radius-lg);
-          padding: 1.5rem;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          position: relative;
-          display: flex;
-          flex-direction: column;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        }
-
-        .plan-card.destacado {
-          border-color: var(--primary);
-          background: linear-gradient(135deg, rgba(37, 99, 235, 0.03), rgba(168, 85, 247, 0.03));
-          box-shadow: 0 8px 24px rgba(37, 99, 235, 0.15);
-        }
-
-        .plan-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
-          border-color: var(--primary);
-        }
-
-        .plan-badge {
-          position: absolute;
-          top: -12px;
-          right: 1rem;
-          background: linear-gradient(135deg, var(--primary), var(--accent));
-          color: white;
-          font-size: 0.7rem;
-          font-weight: 700;
-          padding: 0.5rem 1rem;
-          border-radius: 50px;
-          display: flex;
-          align-items: center;
-          gap: 0.375rem;
-          box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
-          letter-spacing: 0.5px;
-          text-transform: uppercase;
-        }
-
-        .plan-name {
-          font-size: 1.25rem;
-          font-weight: 800;
-          color: var(--text-primary);
-          margin-bottom: 1rem;
-          line-height: 1.3;
-          word-break: break-word;
-          hyphens: auto;
-        }
-
-        .plan-pricing {
-          margin-bottom: 1.25rem;
-          padding-bottom: 1.25rem;
-          border-bottom: 2px solid var(--border-light);
-        }
-
-        .price-main {
-          font-size: 2rem;
-          font-weight: 900;
-          color: var(--primary);
-          line-height: 1;
-          display: flex;
-          align-items: baseline;
-          flex-wrap: wrap;
-          gap: 0.25rem;
-          margin-bottom: 0.5rem;
-        }
-
-        .price-period {
-          font-size: 0.95rem;
-          color: var(--text-muted);
-          font-weight: 500;
-        }
-
-        .price-annual {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          padding: 0.625rem 0.875rem;
-          background: var(--bg-secondary);
-          border-radius: var(--radius);
-          font-size: 0.85rem;
-          color: var(--text-secondary);
-        }
-
-        .save-badge {
-          background: var(--success);
-          color: white;
-          font-size: 0.65rem;
-          font-weight: 700;
-          padding: 0.3rem 0.625rem;
-          border-radius: 5px;
-          text-transform: uppercase;
-          letter-spacing: 0.3px;
-        }
-
-        .plan-content-wrapper {
-          display: flex;
-          flex-direction: column;
-          flex: 1;
-        }
-
-        .ideal-for {
-          display: flex;
-          align-items: flex-start;
-          gap: 0.625rem;
-          padding: 1rem;
-          background: var(--bg-secondary);
-          border-radius: var(--radius);
-          font-size: 0.85rem;
-          color: var(--text-secondary);
-          border: 1px solid var(--border-light);
-          line-height: 1.5;
-          margin-bottom: auto;
-          word-break: break-word;
-        }
-
-        .plan-card.destacado .ideal-for {
-          background: var(--bg-primary);
-          border-color: var(--primary);
-          border-width: 2px;
-        }
-
-        .ideal-for svg {
-          color: var(--primary);
-          flex-shrink: 0;
-          margin-top: 2px;
-          width: 16px;
-          height: 16px;
-        }
-
-        .btn-select-plan {
-          width: 100%;
-          padding: 0.875rem;
-          background: #2563eb;
-          color: white;
-          border: none;
-          border-radius: var(--radius);
-          font-size: 0.95rem;
-          font-weight: 700;
-          cursor: pointer;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          margin-top: 1.25rem;
-          box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
-        }
-
-        .btn-select-plan:hover {
-          background: #1d4ed8;
-          transform: translateY(-2px);
-          box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
-        }
-
-        .btn-select-plan:active {
-          transform: translateY(0);
-        }
-
-        @media (max-width: 768px) {
-          .products-section {
-            padding: 3rem 1.5rem;
-          }
-
-          .section-header h2 {
-            font-size: 1.75rem;
-          }
-
-          .products-grid {
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-          }
-
-          .card-content {
-            padding: 1.5rem;
-          }
-
-          .card-footer {
-            padding: 1.25rem 1.5rem;
-          }
-
-          .price-value {
-            font-size: 1.5rem;
-          }
-
-          .plans-container {
-            padding: 1rem;
-          }
-
-          .plans-grid {
-            grid-template-columns: 1fr;
-            gap: 1rem;
-          }
-
-          .modal-header {
-            padding: 1.5rem 1rem 1rem;
-          }
-
-          .modal-header h3 {
-            font-size: 1.25rem;
-          }
-
-          .plan-card {
-            padding: 1.25rem;
-          }
-
-          .price-main {
-            font-size: 1.75rem;
-          }
+        .animate-modal {
+          animation: modalSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
       `}</style>
     </>

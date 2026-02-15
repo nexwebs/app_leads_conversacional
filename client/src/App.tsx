@@ -4,6 +4,7 @@ import Beneficios from './components/Beneficios';
 import Products from './components/Products';
 import ContactForm from './components/ContactForm';
 import Footer from './components/Footer';
+import Animation3D from './components/Animation3D';
 
 export default function App() {
   return (
@@ -15,7 +16,7 @@ export default function App() {
         { label: "Contacto", href: "#contacto" }
       ]} />
       
-      <main>
+      <main className="w-full max-w-[1200px] mx-auto px-6">
         <Hero description="Captamos y gestionamos leads de forma automática. Vende más, atiende mejor y escala sin esfuerzo." />
         <Beneficios />
         <Products />
@@ -23,6 +24,7 @@ export default function App() {
       </main>
       
       <Footer />
+      <Animation3D />
     </>
   );
 }

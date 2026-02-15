@@ -49,7 +49,7 @@ env/
 
 # Python version
 .python-version
-
+DOCUMENTACION.md
 # ========================
 # NODE/REACT (client/)
 # ========================
@@ -82,7 +82,7 @@ pnpm-debug.log*
 
 # Vite
 .vite/
-
+db/
 # ========================
 # DOCKER
 # ========================
