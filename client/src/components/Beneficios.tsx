@@ -43,7 +43,7 @@ export default function Beneficios({
       </header>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {benefits.map(({ icon, title, description }, index) => (
+        {benefits.map(({ icon, title, description }) => (
           <article key={title} className="p-8 bg-white rounded-2xl border border-slate-200 hover:-translate-y-2 hover:shadow-2xl hover:shadow-blue-500/15 transition-all duration-300 group relative overflow-hidden">
             {/* Gradiente decorativo en hover */}
             <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-transparent to-indigo-50 opacity-0 group-hover:opacity-100 transition-opacity" />
