@@ -1,57 +1,66 @@
 <!doctype html>
-<html lang="es">
+<html lang="es-PE">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     
     <!-- Primary Meta Tags -->
-    <title>NexWebs - Automatización de Ventas con Inteligencia Artificial</title>
-    <meta name="title" content="NexWebs - Automatización de Ventas con Inteligencia Artificial" />
-    <meta name="description" content="Captamos y gestionamos leads de forma automática. Vende más, atiende mejor y escala sin esfuerzo con nuestra plataforma de IA." />
-    <meta name="keywords" content="automatización, IA, ventas, leads, CRM, chatbot, WhatsApp Business, inteligencia artificial, marketing digital, Peru" />
+    <title>NexWebs | Automatización Inteligente de Ventas con IA</title>
+    <meta name="title" content="NexWebs | Automatización Inteligente de Ventas con IA" />
+    <meta name="description" content="Automatiza tu ventas con IA. Captamos leads, gestionamos contactos y cerramos ventas 24/7. CRM, WhatsApp Bot y más. +300% conversiones." />
+    <meta name="keywords" content="automatizacion ventas, IA negocios, CRM Peru, chatbot WhatsApp, lead generation, inteligencia artificial marketing, automatizacion marketing digital, herramientas ventas, software ventas, agente IA" />
     <meta name="author" content="NexWebs" />
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
     <meta name="language" content="Spanish" />
-    <meta name="revisit-after" content="7 days" />
+    <meta name="revisit-after" content="3 days" />
+    <meta name="canonical" content="https://nexwebs.soy.pe/" />
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://nexwebs.com/" />
-    <meta property="og:title" content="NexWebs - Automatización de Ventas con IA" />
-    <meta property="og:description" content="Captamos y gestionamos leads de forma automática. Vende más, atiende mejor y escala sin esfuerzo." />
-    <meta property="og:image" content="/og-image.png" />
+    <meta property="og:url" content="https://nexwebs.soy.pe/" />
+    <meta property="og:title" content="NexWebs | Automatización Inteligente de Ventas con IA" />
+    <meta property="og:description" content="Automatiza tu ventas con IA. Captamos leads, gestionamos contactos y cerramos ventas 24/7. +300% conversiones." />
+    <meta property="og:image" content="https://nexwebs.soy.pe/og-image.png" />
     <meta property="og:site_name" content="NexWebs" />
     <meta property="og:locale" content="es_PE" />
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://nexwebs.com/" />
-    <meta property="twitter:title" content="NexWebs - Automatización de Ventas con IA" />
-    <meta property="twitter:description" content="Captamos y gestionamos leads de forma automática. Vende más, atiende mejor y escala sin esfuerzo." />
-    <meta property="twitter:image" content="/og-image.png" />
+    <meta property="twitter:url" content="https://nexwebs.soy.pe/" />
+    <meta property="twitter:title" content="NexWebs | Automatización Inteligente de Ventas con IA" />
+    <meta property="twitter:description" content="Automatiza tu ventas con IA. +300% conversiones. CRM, WhatsApp Bot y más." />
+    <meta property="twitter:image" content="https://nexwebs.soy.pe/og-image.png" />
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/favicon.png" />
+    <link rel="manifest" href="/manifest.json" />
     
     <!-- Theme Color -->
     <meta name="theme-color" content="#2563eb" />
     <meta name="msapplication-TileColor" content="#2563eb" />
+    <meta name="msapplication-config" content="none" />
     
-    <!-- Preconnect -->
+    <!-- Preconnect para mejor rendimiento -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
-    <!-- Local Fonts -->
-    <link rel="preload" href="/Roboto-Regular.ttf" as="font" type="font/ttf" crossorigin>
-    <link rel="preload" href="/Roboto-Medium.ttf" as="font" type="font/ttf" crossorigin>
-    <link rel="preload" href="/Roboto-Bold.ttf" as="font" type="font/ttf" crossorigin>
+    <!-- Preload crítico -->
+    <link rel="preload" href="/src/main.tsx" as="script" />
+    
+    <!-- DNS Prefetch -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="//fonts.gstatic.com" />
   </head>
   <body>
+    <a href="#inicio" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded-lg">
+      Saltar al contenido principal
+    </a>
     <div id="chat-root"></div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>

@@ -104,7 +104,7 @@ export default function ContactForm() {
           <div className="w-24 h-1.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 rounded-full mx-auto mt-4" />
         </div>
 
-        <div className={`flex items-start gap-4 p-5 rounded-xl mb-8 ${showSuccess ? 'bg-green-50 border border-green-500 text-green-600' : 'hidden'}`}>
+        <div className={`flex items-start gap-4 p-5 rounded-xl mb-8 ${showSuccess ? 'bg-emerald-50 border border-emerald-500 text-emerald-600' : 'hidden'}`}>
           <svg className="flex-shrink-0" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
             <polyline points="22 4 12 14.01 9 11.01"/>

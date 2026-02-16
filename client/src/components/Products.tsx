@@ -224,7 +224,7 @@ export default function Products() {
                         {paquete.precio_anual && (
                           <div className="flex items-center gap-2 py-2.5 px-3.5 bg-slate-50 rounded-lg text-sm text-slate-600">
                             <span>S/ {paquete.precio_anual.toLocaleString('es-PE', { minimumFractionDigits: 2 })}/año</span>
-                            <span className="bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">Ahorra 20%</span>
+                            <span className="bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">Ahorra 20%</span>
                           </div>
                         )}
                       </div>

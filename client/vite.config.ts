@@ -24,4 +24,19 @@ export default defineConfig({
     strictPort: true,
     allowedHosts: true,
   },
+  build: {
+    target: 'esnext',
+    minify: 'esbuild',
+    cssMinify: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+        },
+      },
+    },
+  },
+  esbuild: {
+    legalComments: 'none',
+  },
 })
