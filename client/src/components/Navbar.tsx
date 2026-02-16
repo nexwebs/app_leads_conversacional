@@ -49,64 +49,102 @@ export default function Navbar({
 
   return (
     <>
+      {/* Overlay */}
       <div 
-        className={`fixed inset-0 bg-black/60 z-40 transition-opacity duration-300 ${isActive ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        className={`fixed inset-0 bg-black/70 z-40 transition-opacity duration-300 md:hidden ${isActive ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
         onClick={handleOverlayClick}
       />
-      <nav className={`sticky top-0 z-50 transition-all duration-300 ${
-        scrolled 
-          ? 'bg-white/98 backdrop-blur-xl shadow-lg border-b border-slate-200' 
-          : 'bg-white/95 backdrop-blur-lg border-b border-slate-200'
-      }`}>
-        <div className="w-full max-w-[1200px] mx-auto px-4 md:px-6 flex justify-between items-center h-14 md:h-16">
-          <div className="flex items-center gap-2 md:gap-3">
+      
+      <nav className={`sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white shadow-md' : 'bg-white'}`}>
+        <div className="w-full max-w-7xl mx-auto px-4 flex justify-between items-center h-14">
+          {/* Logo */}
+          <div className="flex items-center gap-2">
             <img
               src="/favicon.svg"
-              alt="NexWebs logo"
-              className="w-7 h-7 md:w-8 md:h-8"
-              width={32}
-              height={32}
+              alt="NexWebs"
+              className="w-7 h-7"
             />
-            <h1 className="text-lg md:text-xl font-bold text-slate-800">{brandName}</h1>
+            <span className="text-lg font-bold text-slate-800">{brandName}</span>
           </div>
 
+          {/* Botón menú hamburguesa más grande */}
           <button 
-            className="flex flex-col justify-center items-center gap-1.5 bg-transparent border-none cursor-pointer p-2 z-50 md:hidden"
+            className="flex flex-col justify-center items-center gap-1.5 bg-transparent border-none cursor-pointer p-3 -mr-2 md:hidden"
             aria-label={isActive ? "Cerrar menú" : "Abrir menú"}
             aria-expanded={isActive}
             onClick={() => setIsActive(!isActive)}
           >
-            <span className={`w-6 h-0.5 bg-slate-800 transition-all duration-300 ${isActive ? 'rotate-45 translate-y-2' : ''}`}></span>
-            <span className={`w-6 h-0.5 bg-slate-800 transition-all duration-300 ${isActive ? 'opacity-0' : ''}`}></span>
-            <span className={`w-6 h-0.5 bg-slate-800 transition-all duration-300 ${isActive ? '-rotate-45 -translate-y-2' : ''}`}></span>
+            <span className={`w-7 h-0.5 bg-slate-800 rounded-full transition-all duration-300 ${isActive ? 'rotate-45 translate-y-2.5' : ''}`}></span>
+            <span className={`w-7 h-0.5 bg-slate-800 rounded-full transition-all duration-300 ${isActive ? 'opacity-0' : ''}`}></span>
+            <span className={`w-7 h-0.5 bg-slate-800 rounded-full transition-all duration-300 ${isActive ? '-rotate-45 -translate-y-2.5' : ''}`}></span>
           </button>
 
-          <ul className={`fixed md:relative top-0 right-0 md:right-auto h-full md:h-auto w-72 md:w-auto bg-white md:bg-transparent flex flex-col md:flex-row items-start md:items-center gap-0 md:gap-6 list-none m-0 p-0 md:p-0 pt-20 md:pt-0 pr-6 md:pr-0 shadow-2xl md:shadow-none transition-transform duration-300 z-50 ${
-            isActive ? 'translate-x-0' : 'translate-x-full md:translate-x-0'
-          }`}>
+          {/* Links desktop */}
+          <ul className="hidden md:flex gap-6 list-none m-0 p-0">
             {links.map(({ label, href }) => (
-              <li key={href} className="w-full md:w-auto border-b md:border-b-0 border-slate-100">
+              <li key={href}>
+                <a href={href} className="text-sm font-medium text-slate-600 hover:text-blue-600 no-underline transition-colors">
+                  {label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </nav>
+
+      {/* Menú móvil - pantalla completa */}
+      <div className={`fixed inset-y-0 right-0 left-0 bg-white z-50 transform transition-transform duration-300 ease-out md:hidden ${
+        isActive ? 'translate-x-0' : 'translate-x-full'
+      }`}>
+        <div className="flex flex-col h-full pt-6 px-6 pb-8">
+          {/* Header con botón cerrar */}
+          <div className="flex justify-between items-center mb-8">
+            <span className="text-xl font-bold text-slate-800">Navegación</span>
+            <button 
+              onClick={() => setIsActive(false)}
+              className="p-3 -mr-3"
+              aria-label="Cerrar menú"
+            >
+              <svg className="w-8 h-8 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          
+          {/* Links - área scrollable */}
+          <ul className="flex flex-col gap-1 list-none m-0 p-0 overflow-y-auto flex-1">
+            <li>
+              <a 
+                href="#inicio" 
+                className="block py-4 px-4 text-lg font-medium text-slate-700 hover:bg-slate-100 rounded-xl no-underline"
+                onClick={handleLinkClick}
+              >
+                Inicio
+              </a>
+            </li>
+            <li>
+              <a 
+                href="#beneficios" 
+                className="block py-4 px-4 text-lg font-medium text-slate-700 hover:bg-slate-100 rounded-xl no-underline"
+                onClick={handleLinkClick}
+              >
+                Beneficios
+              </a>
+            </li>
+            {links.map(({ label, href }) => (
+              <li key={href}>
                 <a 
                   href={href} 
-                  className="text-base md:text-sm font-medium text-slate-700 hover:text-blue-600 no-underline block py-4 md:py-2 px-4 md:px-0 transition-colors"
+                  className="block py-4 px-4 text-lg font-medium text-slate-700 hover:bg-slate-100 rounded-xl no-underline"
                   onClick={handleLinkClick}
                 >
                   {label}
                 </a>
               </li>
             ))}
-            <li className="w-full md:w-auto px-4 md:px-0 pt-4 md:pt-0 md:hidden">
-              <a 
-                href="#contacto" 
-                className="inline-block w-full md:w-auto text-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
-                onClick={handleLinkClick}
-              >
-                ¡Empezar Ahora!
-              </a>
-            </li>
           </ul>
         </div>
-      </nav>
+      </div>
     </>
   );
 }

@@ -40,9 +40,9 @@
 .chat-toggle {
   position: fixed;
   bottom: 1.5rem;
-  right: 1.5rem;
-  width: 60px;
-  height: 60px;
+  right: 1rem;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   background: var(--primary);
   border: none;
@@ -57,6 +57,14 @@
   pointer-events: auto;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
+}
+
+@media (min-width: 768px) {
+  .chat-toggle {
+    right: 1.5rem;
+    width: 60px;
+    height: 60px;
+  }
 }
 
 .chat-toggle:hover {
@@ -92,10 +100,12 @@
 
 .chat-window {
   position: fixed;
-  bottom: 6rem;
-  right: 2rem;
-  width: 380px;
-  height: 560px;
+  bottom: 5rem;
+  right: 0.5rem;
+  left: 0.5rem;
+  width: auto;
+  height: calc(100vh - 7rem);
+  max-height: 560px;
   background: var(--bg-primary);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-lg);
@@ -104,6 +114,17 @@
   z-index: 1000;
   border: 1px solid var(--border);
   animation: slideUp 0.3s ease;
+}
+
+@media (min-width: 768px) {
+  .chat-window {
+    bottom: 6rem;
+    right: 1rem;
+    left: auto;
+    width: 380px;
+    height: 560px;
+    max-height: none;
+  }
 }
 
 @keyframes slideUp {

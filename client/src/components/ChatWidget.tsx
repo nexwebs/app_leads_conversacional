@@ -251,7 +251,7 @@ export default function ChatWidget() {
         onClick={handleToggle}
         aria-label="Abrir chat"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
         </svg>
         {showNotification && <span className="notification-badge">1</span>}
@@ -261,7 +261,7 @@ export default function ChatWidget() {
         <div className="chat-header">
           <div className="header-info">
             <div className="avatar-header">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
                 <circle cx="12" cy="12" r="10"/>
                 <path d="M12 6v6l4 2"/>
               </svg>
@@ -283,7 +283,7 @@ export default function ChatWidget() {
           {!isConnected && messages.length === 0 && !isConnecting && (
             <div className="welcome-message">
               <div className="welcome-icon">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5">
                   <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                 </svg>
               </div>
@@ -296,12 +296,12 @@ export default function ChatWidget() {
               {(msg.role === 'assistant' || msg.role === 'user') && (
                 <div className="message-avatar">
                   {msg.role === 'assistant' ? (
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
                       <circle cx="12" cy="12" r="10"/>
                       <path d="M12 6v6l4 2"/>
                     </svg>
                   ) : (
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
                       <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                       <circle cx="12" cy="7" r="4"/>
                     </svg>
@@ -326,7 +326,7 @@ export default function ChatWidget() {
             aria-label="Mensaje de chat"
           />
           <button type="button" id="sendButton" onClick={handleSend} disabled={!isConnected || isClosed || !inputValue.trim()} aria-label="Enviar mensaje">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
               <line x1="22" y1="2" x2="11" y2="13"></line>
               <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
             </svg>
