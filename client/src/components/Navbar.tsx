@@ -83,32 +83,34 @@ export default function Navbar({
           </div>
 
           {/* Right side: Language + Menu */}
-          <div className="flex items-center gap-1">
-            {/* Language Selector */}
-            <button 
-              onClick={() => setShowLangMenu(!showLangMenu)}
-              className="flex items-center gap-1 px-2 py-1.5 text-sm font-medium text-slate-600 hover:text-blue-600 rounded-lg hover:bg-slate-100 transition-colors"
-              aria-label="Cambiar idioma"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-              </svg>
-              <span className="uppercase">{language}</span>
-            </button>
+          <div className="flex items-center gap-2">
+            {/* Language Selector - Diseño mejorado */}
+            <div className="relative">
+              <button 
+                onClick={() => setShowLangMenu(!showLangMenu)}
+                className="flex items-center gap-2 px-3 py-2 text-sm font-bold uppercase text-white bg-gradient-to-r from-blue-600 to-cyan-500 rounded-lg hover:from-blue-700 hover:to-cyan-600 transition-all shadow-md hover:shadow-lg"
+                aria-label="Cambiar idioma"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03 3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                </svg>
+                <span className="min-w-[1.5rem]">{language}</span>
+              </button>
 
             {/* Dropdown idioma */}
             {showLangMenu && (
-              <div className="absolute top-12 right-16 md:right-4 bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-50">
+              <div className="absolute top-14 right-0 bg-white rounded-lg shadow-xl border border-slate-200 py-1 z-50 min-w-[120px]">
                 <button 
                   onClick={toggleLanguage}
-                  className="flex items-center gap-2 w-full px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
+                  className="flex items-center justify-center gap-3 w-full px-4 py-3 text-sm text-slate-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 transition-colors"
                 >
-                  <span className={`font-bold ${language === 'es' ? 'text-blue-600' : ''}`}>ES</span>
-                  <span className="text-slate-400">|</span>
-                  <span className={`font-bold ${language === 'en' ? 'text-blue-600' : ''}`}>EN</span>
+                  <span className={`font-bold text-base ${language === 'es' ? 'text-blue-600' : 'text-slate-400'}`}>ES</span>
+                  <span className="text-slate-300">|</span>
+                  <span className={`font-bold text-base ${language === 'en' ? 'text-cyan-600' : 'text-slate-400'}`}>EN</span>
                 </button>
               </div>
             )}
+            </div>
 
             {/* Botón menú hamburguesa */}
             <button 
