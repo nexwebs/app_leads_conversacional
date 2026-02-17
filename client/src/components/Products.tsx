@@ -90,7 +90,7 @@ export default function Products() {
 
   return (
     <>
-      <section id="productos" className="relative py-20 px-6 md:px-8 overflow-hidden">
+      <section id="productos" className="relative py-16 md:py-20 px-4 md:px-6 overflow-hidden">
         <div className="absolute inset-0 bg-[url('/image3.png')] bg-cover bg-center bg-no-repeat z-0 scale-105" />
         <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-blue-950/40 to-slate-950 z-0" />
         

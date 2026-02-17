@@ -31,7 +31,7 @@ export default function Hero({
   ]
 }: HeroProps) {
   return (
-    <header id="inicio" className="relative min-h-[90vh] flex items-center justify-center text-center overflow-hidden py-24 px-6">
+    <header id="inicio" className="relative min-h-[90vh] flex items-center justify-center text-center overflow-hidden py-20 md:py-24 px-4 md:px-6">
       {/* Background con efectos */}
       <div className="absolute inset-0 bg-[url('/image2.png')] bg-cover bg-center bg-no-repeat z-0 scale-105" />
       <div className="absolute inset-0 bg-gradient-to-b from-slate-900 via-blue-900/40 to-slate-900 z-0" />
@@ -49,7 +49,7 @@ export default function Hero({
       {/* Grid decorativo */}
       <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%23ffffff%22%20fill-opacity%3D%220.03%22%3E%3Cpath%20d%3D%22M36%2034h-v-2h2v2zm0-4h-2v2h2v-2zm-4%204h2v2h-2v-2zm0-4h2v2h-2v-2zm4%204h-2v2h2v-2zm0-4h-2v2h2v-2zm-4%204h2v2h-2v-2zm0-4h2v2h-2v-2zm4%204h-2v2h2v-2zm0-4h-2v2h2v-2zm-4%204h2v2h-2v-2zm0-4h2v2h-2v-2zm4%204h-2v2h2v-2zm0-4h-2v2h2v-2zm-4%204h2v2h-2v-2zm0-4h2v2h-2v-2z%22%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E')] opacity-50 z-0" />
       
-      <div className="relative z-10 px-8">
+      <div className="relative z-10 px-4 md:px-6">
         <span className="inline-block px-6 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-500 text-white rounded-full text-sm font-bold mb-8 shadow-xl shadow-blue-500/40 border border-blue-400/30 uppercase tracking-wider">
           {badge}
         </span>

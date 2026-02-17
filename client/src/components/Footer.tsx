@@ -1,13 +1,31 @@
 interface FooterProps {
   brandName?: string;
+  description?: string;
+  links?: {
+    productos: string;
+    empresa: string;
+    soporte: string;
+  };
+  copyright?: string;
+  tagline?: string;
 }
 
-export default function Footer({ brandName = "NexWebs" }: FooterProps) {
+export default function Footer({ 
+  brandName = "NexWebs",
+  description = "Automatización inteligente de ventas con IA. Transforma tu negocio con soluciones que escalan.",
+  links = {
+    productos: "Productos",
+    empresa: "Empresa", 
+    soporte: "Soporte"
+  },
+  copyright = "Todos los derechos reservados.",
+  tagline = "Hecho con IA para potenciar tu negocio"
+}: FooterProps) {
   const currentYear = new Date().getFullYear();
 
   return (
     <footer className="bg-gradient-to-b from-[#11162e] via-[#0f1430] to-[#0a0f1e] text-gray-400 border-t border-white/5">
-      <div className="w-full max-w-[1200px] mx-auto px-8 py-16 grid grid-cols-1 md:grid-cols-[1.5fr_2fr] gap-16">
+      <div className="w-full max-w-[1200px] mx-auto px-4 md:px-6 py-12 md:py-16 grid grid-cols-1 md:grid-cols-[1.5fr_2fr] gap-10 md:gap-16">
         <div className="flex flex-col gap-6">
           <div className="flex items-center gap-3">
             <img
@@ -20,7 +38,7 @@ export default function Footer({ brandName = "NexWebs" }: FooterProps) {
           </div>
           
           <p className="text-sm leading-7 text-gray-500 max-w-[320px]">
-            Automatización inteligente de ventas con IA. Transforma tu negocio con soluciones que escalan.
+            {description}
           </p>
           <div className="flex gap-4">
             <a href="https://www.linkedin.com/in/claudio-quispe/" aria-label="LinkedIn" className="w-10 h-10 bg-slate-700 border border-slate-600 rounded-full flex items-center justify-center text-gray-400 hover:bg-blue-600 hover:border-blue-600 hover:text-white transition-all hover:-translate-y-0.5">
@@ -43,7 +61,7 @@ export default function Footer({ brandName = "NexWebs" }: FooterProps) {
 
         <div className="grid grid-cols-3 gap-10">
           <div>
-            <h4 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-5">Productos</h4>
+            <h4 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-5">{links.productos}</h4>
             <ul className="flex flex-col gap-3.5">
               <li><a href="#productos" className="text-sm text-gray-300 hover:text-cyan-400 transition-all hover:translate-x-1 inline-block">CRM + Facturación</a></li>
               <li><a href="#productos" className="text-sm text-gray-300 hover:text-cyan-400 transition-all hover:translate-x-1 inline-block">Agente IA</a></li>
@@ -53,7 +71,7 @@ export default function Footer({ brandName = "NexWebs" }: FooterProps) {
           </div>
 
           <div>
-            <h4 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-5">Empresa</h4>
+            <h4 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-5">{links.empresa}</h4>
             <ul className="flex flex-col gap-3.5">
               <li><a href="#beneficios" className="text-sm text-gray-300 hover:text-cyan-400 transition-all hover:translate-x-1 inline-block">Beneficios</a></li>
               <li><a href="#contacto" className="text-sm text-gray-300 hover:text-cyan-400 transition-all hover:translate-x-1 inline-block">Contáctanos</a></li>
@@ -63,7 +81,7 @@ export default function Footer({ brandName = "NexWebs" }: FooterProps) {
           </div>
 
           <div>
-            <h4 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-5">Soporte</h4>
+            <h4 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-5">{links.soporte}</h4>
             <ul className="flex flex-col gap-3.5">
               <li><a href="#contacto" className="text-sm text-gray-300 hover:text-cyan-400 transition-all hover:translate-x-1 inline-block">Centro de Ayuda</a></li>
               <li><a href="#" className="text-sm text-gray-300 hover:text-cyan-400 transition-all hover:translate-x-1 inline-block">Documentación</a></li>
@@ -74,10 +92,10 @@ export default function Footer({ brandName = "NexWebs" }: FooterProps) {
         </div>
       </div>
 
-      <div className="border-t border-gray-800 py-8 bg-[#060b16]">
-        <div className="w-full max-w-[1200px] mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-gray-500">&copy; {currentYear} {brandName}. Todos los derechos reservados.</p>
-          <p className="text-sm text-gray-500 font-medium">Hecho con IA para potenciar tu negocio</p>
+      <div className="border-t border-gray-800 py-6 bg-[#060b16]">
+        <div className="w-full max-w-[1200px] mx-auto px-4 md:px-6 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-sm text-gray-500">&copy; {currentYear} {brandName}. {copyright}</p>
+          <p className="text-sm text-gray-500 font-medium">{tagline}</p>
         </div>
       </div>
     </footer>

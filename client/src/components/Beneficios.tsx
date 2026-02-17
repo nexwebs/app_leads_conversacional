@@ -30,7 +30,7 @@ export default function Beneficios({
   ]
 }: BeneficiosProps) {
   return (
-    <section id="beneficios" className="py-20 px-6 md:px-8 bg-slate-50 relative overflow-hidden">
+    <section id="beneficios" className="py-16 md:py-20 px-4 md:px-6 bg-slate-50 relative overflow-hidden">
       {/* Elementos decorativos con animación */}
       <div className="absolute left-0 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
       <div className="absolute right-0 w-72 h-72 bg-indigo-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
