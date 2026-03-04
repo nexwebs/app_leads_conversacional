@@ -45,7 +45,7 @@ async def run_rate_limiter_cleanup():
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("=" * 60)
-    print("🚀 CRM Lead Capture (512MB Optimized + Security)")
+    print("CRM Lead Capture (512MB Optimized + Security)")
     print(f"Entorno: {settings.APP_ENV}")
     print(f"Dominio: {settings.DOMAIN}")
     print(f"JWT Expire: {settings.ACCESS_TOKEN_EXPIRE_MINUTES} min")
@@ -54,7 +54,7 @@ async def lifespan(app: FastAPI):
     if GC_CONFIG["enabled"]:
         gc.set_threshold(*GC_CONFIG["threshold"])
         gc.enable()
-        print("✅ Garbage Collector configurado")
+        print("GC configurado")
 
     try:
         from app.services.database import engine
@@ -62,24 +62,24 @@ async def lifespan(app: FastAPI):
         async with engine.begin() as conn:
             result = await conn.execute(text("SELECT version()"))
             version = result.scalar()
-            print(f"✅ PostgreSQL: {version[:50]}")
+            print(f"PostgreSQL: {version[:50]}")
 
             await conn.execute(
                 text("SELECT 1 FROM pg_extension WHERE extname='vector'")
             )
-            print("✅ pgvector OK")
+            print("pgvector OK")
 
     except Exception as e:
-        print(f"❌ Error DB: {e}")
+        print(f"Error DB: {e}")
 
     try:
         from app.services.embeddings import embedding_service
 
-        print(f"✅ Embeddings: {settings.EMBEDDING_MODEL}")
+        print(f"Embeddings: {settings.EMBEDDING_MODEL}")
     except Exception as e:
-        print(f"⚠️  Embeddings: {e}")
+        print(f"Warning - Embeddings: {e}")
 
-    print(f"🔒 Rate Limits:")
+    print(f"Rate Limits:")
     print(
         f"   Public: {settings.RATE_LIMIT_PUBLIC_RPM}/min, {settings.RATE_LIMIT_PUBLIC_RPH}/hora"
     )
@@ -95,14 +95,14 @@ async def lifespan(app: FastAPI):
 
     if GC_CONFIG["enabled"]:
         gc_task = asyncio.create_task(run_garbage_collector())
-        print("✅ GC task iniciado")
+        print("GC task iniciado")
 
     cleanup_task = asyncio.create_task(run_rate_limiter_cleanup())
-    print("✅ Rate limiter cleanup iniciado")
+    print("Rate limiter cleanup iniciado")
 
     print("=" * 60)
-    print(f"🌐 API: http://{settings.API_HOST}:{settings.API_PORT}")
-    print(f"📚 Docs: http://{settings.API_HOST}:{settings.API_PORT}/docs")
+    print(f"API: http://{settings.API_HOST}:{settings.API_PORT}")
+    print(f"Docs: http://{settings.API_HOST}:{settings.API_PORT}/docs")
     print("=" * 60)
 
     yield
@@ -116,12 +116,12 @@ async def lifespan(app: FastAPI):
         from app.services.database import engine
 
         await engine.dispose()
-        print("✅ DB cerrada")
+        print("DB cerrada")
     except:
         pass
 
     gc.collect()
-    print("✅ Sistema apagado")
+    print("Sistema apagado")
 
 
 app = FastAPI(
@@ -138,14 +138,20 @@ app = FastAPI(
 if settings.APP_ENV == "production":
     allowed_origins = [origin for origin in settings.CORS_ORIGINS if origin != "*"]
 else:
-    allowed_origins = settings.CORS_ORIGINS
+    allowed_origins = [
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "http://localhost:3000",
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:5174",
+    ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
-    allow_headers=["Authorization", "Content-Type"],
+    allow_methods=["*"],
+    allow_headers=["*"],
     max_age=3600,
 )
 

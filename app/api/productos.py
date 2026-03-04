@@ -2,13 +2,18 @@
 app/api/productos.py
 Endpoints con generación directa (sin BackgroundTasks ni schedulers)
 """
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, text
 
 from app.services.database import get_db
-from app.services.product_embeddings import generar_embedding_producto, eliminar_embedding_producto
+from app.services.product_embeddings import (
+    generar_embedding_producto,
+    eliminar_embedding_producto,
+)
 from app.models import Producto, Paquete
+from app.api.auth import get_current_active_user
 from pydantic import BaseModel
 from typing import List, Optional
 from uuid import UUID
@@ -46,10 +51,7 @@ class ProductoUpdate(BaseModel):
 
 
 @router.get("/")
-async def listar_productos(
-    activo: bool = True,
-    db: AsyncSession = Depends(get_db)
-):
+async def listar_productos(activo: bool = True, db: AsyncSession = Depends(get_db)):
     """
     Obtener todos los productos con sus paquetes
     Endpoint público (sin autenticación)
@@ -57,64 +59,56 @@ async def listar_productos(
     try:
         # Obtener productos
         result = await db.execute(
-            select(Producto)
-            .where(Producto.activo == activo)
-            .order_by(Producto.nombre)
+            select(Producto).where(Producto.activo == activo).order_by(Producto.nombre)
         )
         productos = result.scalars().all()
-        
+
         productos_data = []
-        
+
         for producto in productos:
             # Obtener paquetes de cada producto
             result_paquetes = await db.execute(
                 select(Paquete)
-                .where(
-                    Paquete.producto_id == producto.id,
-                    Paquete.activo == True
-                )
+                .where(Paquete.producto_id == producto.id, Paquete.activo == True)
                 .order_by(Paquete.precio_mensual)
             )
             paquetes = result_paquetes.scalars().all()
-            
-            productos_data.append({
-                "id": str(producto.id),
-                "nombre": producto.nombre,
-                "slug": producto.slug,
-                "descripcion_corta": producto.descripcion_corta,
-                "precio_base": float(producto.precio_base),
-                "sectores": producto.sectores or [],
-                "features": producto.features or [],
-                "paquetes": [
-                    {
-                        "id": str(paq.id),
-                        "nombre": paq.nombre,
-                        "slug": paq.slug,
-                        "precio_mensual": float(paq.precio_mensual),
-                        "precio_anual": float(paq.precio_anual) if paq.precio_anual else None,
-                        "ideal_para": paq.ideal_para or [],
-                        "limites": paq.limites or {},
-                        "destacado": paq.destacado
-                    }
-                    for paq in paquetes
-                ]
-            })
-        
-        return {
-            "total": len(productos_data),
-            "productos": productos_data
-        }
-        
+
+            productos_data.append(
+                {
+                    "id": str(producto.id),
+                    "nombre": producto.nombre,
+                    "slug": producto.slug,
+                    "descripcion_corta": producto.descripcion_corta,
+                    "precio_base": float(producto.precio_base),
+                    "sectores": producto.sectores or [],
+                    "features": producto.features or [],
+                    "paquetes": [
+                        {
+                            "id": str(paq.id),
+                            "nombre": paq.nombre,
+                            "slug": paq.slug,
+                            "precio_mensual": float(paq.precio_mensual),
+                            "precio_anual": float(paq.precio_anual)
+                            if paq.precio_anual
+                            else None,
+                            "ideal_para": paq.ideal_para or [],
+                            "limites": paq.limites or {},
+                            "destacado": paq.destacado,
+                        }
+                        for paq in paquetes
+                    ],
+                }
+            )
+
+        return {"total": len(productos_data), "productos": productos_data}
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-
 @router.post("/productos")
-async def crear_producto(
-    producto: ProductoCreate,
-    db: AsyncSession = Depends(get_db)
-):
+async def crear_producto(producto: ProductoCreate, db: AsyncSession = Depends(get_db)):
     """Crea producto y genera embedding en la misma transacción"""
     try:
         result = await db.execute(
@@ -131,12 +125,12 @@ async def crear_producto(
                 "desc": producto.descripcion_corta,
                 "precio": producto.precio_base,
                 "sectores": producto.sectores,
-                "features": producto.features
-            }
+                "features": producto.features,
+            },
         )
-        
+
         producto_id = result.scalar()
-        
+
         for paq in producto.paquetes:
             await db.execute(
                 text("""
@@ -155,27 +149,27 @@ async def crear_producto(
                     "precio_a": paq.precio_anual,
                     "ideal": paq.ideal_para,
                     "limites": paq.limites,
-                    "destacado": paq.destacado
-                }
+                    "destacado": paq.destacado,
+                },
             )
-        
+
         embedding_ok = await generar_embedding_producto(db, str(producto_id))
-        
+
         if not embedding_ok:
             await db.rollback()
             raise HTTPException(
-                status_code=500, 
-                detail="Producto creado pero fallo generación de embedding"
+                status_code=500,
+                detail="Producto creado pero fallo generación de embedding",
             )
-        
+
         await db.commit()
-        
+
         return {
             "success": True,
             "producto_id": str(producto_id),
-            "mensaje": "Producto creado con embedding"
+            "mensaje": "Producto creado con embedding",
         }
-        
+
     except Exception as e:
         await db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
@@ -183,101 +177,88 @@ async def crear_producto(
 
 @router.put("/productos/{producto_id}")
 async def actualizar_producto(
-    producto_id: UUID,
-    producto: ProductoUpdate,
-    db: AsyncSession = Depends(get_db)
+    producto_id: UUID, producto: ProductoUpdate, db: AsyncSession = Depends(get_db)
 ):
     """Actualiza producto y regenera embedding en la misma transacción"""
     try:
         updates = []
         params = {"producto_id": str(producto_id)}
-        
+
         if producto.nombre is not None:
             updates.append("nombre = :nombre")
             params["nombre"] = producto.nombre
-        
+
         if producto.descripcion_corta is not None:
             updates.append("descripcion_corta = :desc")
             params["desc"] = producto.descripcion_corta
-        
+
         if producto.precio_base is not None:
             updates.append("precio_base = :precio")
             params["precio"] = producto.precio_base
-        
+
         if producto.sectores is not None:
             updates.append("sectores = :sectores")
             params["sectores"] = producto.sectores
-        
+
         if producto.features is not None:
             updates.append("features = :features")
             params["features"] = producto.features
-        
+
         if producto.activo is not None:
             updates.append("activo = :activo")
             params["activo"] = producto.activo
-        
+
         if not updates:
             raise HTTPException(status_code=400, detail="No hay campos para actualizar")
-        
+
         query = f"""
             UPDATE productos 
-            SET {', '.join(updates)}
+            SET {", ".join(updates)}
             WHERE id = :producto_id
         """
-        
+
         await db.execute(text(query), params)
-        
+
         embedding_ok = await generar_embedding_producto(db, str(producto_id))
-        
+
         if not embedding_ok:
             await db.rollback()
             raise HTTPException(
                 status_code=500,
-                detail="Producto actualizado pero fallo regeneración de embedding"
+                detail="Producto actualizado pero fallo regeneración de embedding",
             )
-        
+
         await db.commit()
-        
-        return {
-            "success": True,
-            "mensaje": "Producto actualizado con embedding"
-        }
-        
+
+        return {"success": True, "mensaje": "Producto actualizado con embedding"}
+
     except Exception as e:
         await db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.delete("/productos/{producto_id}")
-async def eliminar_producto(
-    producto_id: UUID,
-    db: AsyncSession = Depends(get_db)
-):
+async def eliminar_producto(producto_id: UUID, db: AsyncSession = Depends(get_db)):
     """Elimina producto y su embedding en la misma transacción"""
     try:
         result = await db.execute(
-            text("SELECT id FROM productos WHERE id = :id"),
-            {"id": str(producto_id)}
+            text("SELECT id FROM productos WHERE id = :id"), {"id": str(producto_id)}
         )
         producto_existe = result.scalar()
-        
+
         if not producto_existe:
             raise HTTPException(status_code=404, detail="Producto no encontrado")
-        
+
         await eliminar_embedding_producto(db, str(producto_id))
-        
+
         await db.execute(
-            text("DELETE FROM productos WHERE id = :id"),
-            {"id": str(producto_id)}
+            text("DELETE FROM productos WHERE id = :id"), {"id": str(producto_id)}
         )
-        
+
         await db.commit()
-        
-        return {
-            "success": True,
-            "mensaje": "Producto y embedding eliminados"
-        }
-        
+
+        return {"success": True, "mensaje": "Producto y embedding eliminados"}
+
     except Exception as e:
         await db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
@@ -285,21 +266,18 @@ async def eliminar_producto(
 
 @router.post("/paquetes/{producto_id}")
 async def agregar_paquete(
-    producto_id: UUID,
-    paquete: PaqueteCreate,
-    db: AsyncSession = Depends(get_db)
+    producto_id: UUID, paquete: PaqueteCreate, db: AsyncSession = Depends(get_db)
 ):
     """Agrega paquete y regenera embedding del producto en la misma transacción"""
     try:
         result = await db.execute(
-            text("SELECT slug FROM productos WHERE id = :id"),
-            {"id": str(producto_id)}
+            text("SELECT slug FROM productos WHERE id = :id"), {"id": str(producto_id)}
         )
         producto_slug = result.scalar()
-        
+
         if not producto_slug:
             raise HTTPException(status_code=404, detail="Producto no encontrado")
-        
+
         await db.execute(
             text("""
                 INSERT INTO paquetes 
@@ -317,27 +295,62 @@ async def agregar_paquete(
                 "precio_a": paquete.precio_anual,
                 "ideal": paquete.ideal_para,
                 "limites": paquete.limites,
-                "destacado": paquete.destacado
-            }
+                "destacado": paquete.destacado,
+            },
         )
-        
+
         embedding_ok = await generar_embedding_producto(db, str(producto_id))
-        
+
         if not embedding_ok:
             await db.rollback()
             raise HTTPException(
                 status_code=500,
-                detail="Paquete agregado pero fallo regeneración de embedding"
+                detail="Paquete agregado pero fallo regeneración de embedding",
             )
-        
+
         await db.commit()
-        
+
         return {
             "success": True,
-            "mensaje": "Paquete agregado con embedding actualizado"
+            "mensaje": "Paquete agregado con embedding actualizado",
         }
-        
+
     except Exception as e:
         await db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
 
+
+@router.post("/sync-knowledge")
+async def sincronizar_conocimiento(
+    db: AsyncSession = Depends(get_db), current_user=Depends(get_current_active_user)
+):
+    """
+    Sincroniza la base de conocimientos RAG con los productos actuales.
+    Regenera embeddings para todos los productos activos.
+    """
+    try:
+        result = await db.execute(text("SELECT id FROM productos WHERE activo = TRUE"))
+        productos = result.fetchall()
+
+        sincronizados = 0
+        errores = []
+
+        for (producto_id,) in productos:
+            try:
+                await generar_embedding_producto(db, str(producto_id))
+                sincronizados += 1
+            except Exception as e:
+                errores.append(f"Producto {producto_id}: {str(e)}")
+
+        await db.commit()
+
+        return {
+            "success": True,
+            "sincronizados": sincronizados,
+            "total": len(productos),
+            "errores": errores if errores else None,
+        }
+
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(status_code=500, detail=str(e))

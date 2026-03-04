@@ -22,6 +22,7 @@ export default function ChatWidget() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const reconnectAttemptsRef = useRef(0);
+  const intentionallyClosedRef = useRef(false);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -68,14 +69,17 @@ export default function ChatWidget() {
         setIsConnected(false);
         setIsConnecting(false);
         
-        if (!isClosed && reconnectAttemptsRef.current < 3) {
-          reconnectAttemptsRef.current++;
-          const delay = Math.min(1000 * Math.pow(2, reconnectAttemptsRef.current), 5000);
-          reconnectTimeoutRef.current = setTimeout(() => {
-            if (!isClosed) connectWebSocket();
-          }, delay);
-        } else if (!isClosed) {
-          setConnectionError('Conexión perdida');
+        // Solo intentar reconectar si NO fue cerrado intencionalmente
+        if (!intentionallyClosedRef.current && !isClosed) {
+          if (reconnectAttemptsRef.current < 3) {
+            reconnectAttemptsRef.current++;
+            const delay = Math.min(1000 * Math.pow(2, reconnectAttemptsRef.current), 5000);
+            reconnectTimeoutRef.current = setTimeout(() => {
+              if (!intentionallyClosedRef.current && !isClosed) connectWebSocket();
+            }, delay);
+          } else {
+            setConnectionError('Conexión perdida');
+          }
         }
         
         if (isClosed) {
@@ -105,7 +109,7 @@ export default function ChatWidget() {
             
             if (data.data?.cerrada) {
               setIsClosed(true);
-              terminateConnection();
+              terminateConnection(true);
             }
             return;
           }
@@ -115,7 +119,7 @@ export default function ChatWidget() {
             if (data.data?.message) {
               renderMessage(data.data.message, 'system');
             }
-            terminateConnection();
+            terminateConnection(true);
             return;
           }
 
@@ -138,9 +142,10 @@ export default function ChatWidget() {
     }
   };
 
-  const terminateConnection = () => {
+  const terminateConnection = (intentional = false) => {
     setIsConnected(false);
     setInputValue('Conversación finalizada');
+    intentionallyClosedRef.current = intentional;
     
     if (reconnectTimeoutRef.current) {
       clearTimeout(reconnectTimeoutRef.current);
@@ -182,6 +187,7 @@ export default function ChatWidget() {
         setInputValue('');
         setConnectionError(null);
         reconnectAttemptsRef.current = 0;
+        intentionallyClosedRef.current = false;
       } else {
         return;
       }

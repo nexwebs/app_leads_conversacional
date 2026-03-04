@@ -62,15 +62,37 @@ class Settings(BaseSettings):
     RATE_LIMIT_WS_RPM: int = 30
     RATE_LIMIT_WS_RPH: int = 500
 
+    CORS_ORIGIN_1: str = ""
+    CORS_ORIGIN_2: str = ""
+    CORS_ORIGIN_3: str = ""
+    CORS_ORIGIN_4: str = ""
+    CORS_ORIGIN_5: str = ""
+    CORS_ORIGIN_6: str = ""
+    CORS_ORIGIN_7: str = ""
+    CORS_ORIGIN_8: str = ""
+    CORS_ORIGIN_9: str = ""
+
     CORS_ORIGINS: List[str] = [
         "http://localhost:4321",
         "http://localhost:3000",
         "http://localhost:5173",
+        "http://localhost:5174",
         "http://www.localhost:5173",
         "http://127.0.0.1:5173",
+        "http://127.0.0.1:5174",
         "https://tu-dominio.com",
         "https://www.tu-dominio.com",
     ]
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        cors_list = []
+        for i in range(1, 10):
+            origin = getattr(self, f"CORS_ORIGIN_{i}", None)
+            if origin:
+                cors_list.append(origin)
+        if cors_list:
+            self.CORS_ORIGINS = cors_list
 
     MAX_REQUEST_SIZE_MB: int = 2
     WEBSOCKET_TIMEOUT: int = 300

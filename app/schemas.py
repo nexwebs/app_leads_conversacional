@@ -2,11 +2,13 @@
 app/schemas.py
 Schemas Pydantic para validación y serialización
 """
+
 from pydantic import BaseModel, EmailStr, Field, ConfigDict
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 from uuid import UUID
 from decimal import Decimal
+
 
 # ============= CHAT =============
 class ChatMessage(BaseModel):
@@ -20,6 +22,7 @@ class ChatRequest(BaseModel):
     session_id: Optional[str] = None
     metadata: Optional[Dict[str, Any]] = None
 
+
 class ChatResponse(BaseModel):
     response: str
     session_id: str
@@ -29,18 +32,21 @@ class ChatResponse(BaseModel):
     necesita_vendedor: bool = False
     metadata: Optional[Dict[str, Any]] = None
 
+
 # ============= LEAD =============
 class LeadBase(BaseModel):
     email: Optional[EmailStr] = None
     telefono: Optional[str] = None
     nombre_completo: Optional[str] = None
     empresa: Optional[str] = None
-    origen: str = 'web_chat'
+    origen: str = "web_chat"
     utm_source: Optional[str] = None
     utm_campaign: Optional[str] = None
 
+
 class LeadCreate(LeadBase):
     pass
+
 
 class LeadUpdate(BaseModel):
     email: Optional[EmailStr] = None
@@ -52,6 +58,7 @@ class LeadUpdate(BaseModel):
     problema_principal: Optional[str] = None
     urgencia_dias: Optional[int] = None
     estado: Optional[str] = None
+
 
 class LeadResponse(LeadBase):
     id: str  # UUID como string
@@ -65,9 +72,9 @@ class LeadResponse(LeadBase):
     created_at: datetime
     updated_at: datetime
     ultima_interaccion: Optional[datetime] = None
-    
+
     model_config = ConfigDict(from_attributes=True)
-    
+
     @classmethod
     def from_orm_model(cls, lead):
         """Convierte modelo ORM a Pydantic con UUIDs como strings"""
@@ -86,16 +93,20 @@ class LeadResponse(LeadBase):
             es_decisor=lead.es_decisor,
             problema_principal=lead.problema_principal,
             urgencia_dias=lead.urgencia_dias,
-            vendedor_asignado_id=str(lead.vendedor_asignado_id) if lead.vendedor_asignado_id else None,
+            vendedor_asignado_id=str(lead.vendedor_asignado_id)
+            if lead.vendedor_asignado_id
+            else None,
             created_at=lead.created_at,
             updated_at=lead.updated_at,
-            ultima_interaccion=lead.ultima_interaccion
+            ultima_interaccion=lead.ultima_interaccion,
         )
+
 
 # ============= CONVERSACION =============
 class ConversacionBase(BaseModel):
     canal: str
     session_id: str
+
 
 class ConversacionResponse(ConversacionBase):
     id: str  # UUID como string
@@ -109,8 +120,9 @@ class ConversacionResponse(ConversacionBase):
     inicio_sesion: datetime
     fin_sesion: Optional[datetime] = None
     total_mensajes: int
-    
+
     model_config = ConfigDict(from_attributes=True)
+
 
 # ============= MENSAJE =============
 class MensajeCreate(BaseModel):
@@ -121,6 +133,7 @@ class MensajeCreate(BaseModel):
     intenciones: Optional[Dict[str, Any]] = None
     entidades: Optional[Dict[str, Any]] = None
 
+
 class MensajeResponse(BaseModel):
     id: str  # UUID como string
     conversacion_id: str  # UUID como string
@@ -130,8 +143,9 @@ class MensajeResponse(BaseModel):
     intenciones: Optional[Dict[str, Any]] = None
     entidades: Optional[Dict[str, Any]] = None
     created_at: datetime
-    
+
     model_config = ConfigDict(from_attributes=True)
+
 
 # ============= PRODUCTO =============
 class ProductoResponse(BaseModel):
@@ -143,8 +157,9 @@ class ProductoResponse(BaseModel):
     sectores: List[str]
     features: List[str]
     activo: bool
-    
+
     model_config = ConfigDict(from_attributes=True)
+
 
 class PaqueteResponse(BaseModel):
     id: str  # UUID como string
@@ -157,8 +172,9 @@ class PaqueteResponse(BaseModel):
     limites: Optional[Dict[str, Any]] = None
     destacado: bool
     activo: bool
-    
+
     model_config = ConfigDict(from_attributes=True)
+
 
 # ============= VENDEDOR =============
 class VendedorLeadUpdate(BaseModel):
@@ -169,6 +185,7 @@ class VendedorLeadUpdate(BaseModel):
     producto_vendido_id: Optional[str] = None  # UUID como string
     paquete_vendido_id: Optional[str] = None  # UUID como string
 
+
 class VendedorDashboard(BaseModel):
     total_leads: int
     leads_calificados: int
@@ -176,6 +193,7 @@ class VendedorDashboard(BaseModel):
     leads_descartados: int
     tasa_conversion: float
     leads_recientes: List[LeadResponse]
+
 
 # ============= RAG =============
 class ConocimientoRAGResponse(BaseModel):
@@ -185,21 +203,26 @@ class ConocimientoRAGResponse(BaseModel):
     contenido: str
     metadata: Optional[Dict[str, Any]] = None
     similitud: Optional[float] = None
-    
+
     model_config = ConfigDict(from_attributes=True)
+
 
 # ============= ANALYTICS =============
 class SenalInteres(BaseModel):
-    tipo: str = Field(..., description="pregunta_precio, solicita_demo, menciona_presupuesto, etc")
+    tipo: str = Field(
+        ..., description="pregunta_precio, solicita_demo, menciona_presupuesto, etc"
+    )
     contenido: str
     timestamp: datetime
     peso: int = Field(..., ge=1, le=10)
+
 
 class SenalRechazo(BaseModel):
     tipo: str = Field(..., description="muy_caro, no_necesito, etc")
     contenido: str
     timestamp: datetime
     peso: int = Field(..., ge=1, le=10)
+
 
 class ActualizacionProbabilidad(BaseModel):
     probabilidad_anterior: int
@@ -208,15 +231,17 @@ class ActualizacionProbabilidad(BaseModel):
     senales_rechazo: List[SenalRechazo]
     justificacion: str
 
+
 # ============= AGENT STATE (para uso interno) =============
 class AgentState(BaseModel):
     """Estado compartido entre agentes"""
+
     session_id: str
     lead_id: Optional[str] = None  # UUID como string
     conversacion_id: Optional[str] = None  # UUID como string
     mensaje_usuario: str
     historial: List[ChatMessage] = []
-    
+
     # Información extraída
     nombre: Optional[str] = None
     email: Optional[EmailStr] = None
@@ -226,21 +251,26 @@ class AgentState(BaseModel):
     urgencia_dias: Optional[int] = None
     problema_principal: Optional[str] = None
     es_decisor: Optional[bool] = None
-    
+
     # Tracking
     probabilidad_compra: int = 0
     senales_interes: List[Dict[str, Any]] = []
     senales_rechazo: List[Dict[str, Any]] = []
     producto_recomendado: Optional[str] = None
     paquete_recomendado: Optional[str] = None
-    
+
     # Control de flujo
     etapa: str = "inicio"
     necesita_vendedor: bool = False
     debe_finalizar: bool = False
-    
+
     # Contexto RAG
     conocimiento_relevante: List[Dict[str, Any]] = []
     patrones_aplicados: List[Dict[str, Any]] = []
-    
+
     model_config = ConfigDict(arbitrary_types_allowed=True)
+
+
+# ============= LEADS BULK =============
+class BulkDeleteLeadsRequest(BaseModel):
+    lead_ids: List[str] = Field(..., description="Lista de IDs de leads a eliminar")

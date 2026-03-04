@@ -27,7 +27,6 @@ async def websocket_chat(websocket: WebSocket, session_id: str):
 
     await websocket.accept()
     ws_manager.connect(client_host)
-    ws_manager.connect(client_host)
 
     db = None
 
