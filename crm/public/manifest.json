@@ -1,0 +1,16 @@
+{
+  "name": "NexWebs",
+  "short_name": "NexWebs",
+  "description": "Automatización de Ventas con Inteligencia Artificial",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

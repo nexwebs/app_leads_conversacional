@@ -74,6 +74,7 @@ export const leadsService = {
     estado?: string; 
     origen?: string; 
     score_minimo?: number; 
+    vendedor_id?: string;
     fecha_desde?: string;
     fecha_hasta?: string;
     limit?: number; 
@@ -103,13 +104,27 @@ export const leadsService = {
     return response.data;
   },
 
+  createLead: async (data: {
+    nombre_completo: string;
+    email: string;
+    telefono?: string;
+    empresa?: string;
+    origen?: string;
+  }) => {
+    const response = await api.post('/leads/', data);
+    return response.data;
+  },
+
   getLeadConversations: async (id: string) => {
     const response = await api.get(`/leads/${id}/conversaciones`);
     return response.data;
   },
 
-  getStats: async () => {
-    const response = await api.get('/leads/stats/resumen');
+  getStats: async (params?: {
+    fecha_desde?: string;
+    fecha_hasta?: string;
+  }) => {
+    const response = await api.get('/leads/stats/resumen', { params });
     return response.data;
   },
 

@@ -46,6 +46,7 @@ export default function Leads() {
     estado: '',
     origen: '',
     score_minimo: 0,
+    vendedor_id: '',
     fecha_desde: '',
     fecha_hasta: '',
   });
@@ -54,10 +55,17 @@ export default function Leads() {
     limit: 20,
   });
   const [searchTerm, setSearchTerm] = useState('');
-  const [showFilters, setShowFilters] = useState(false);
   const [assignModal, setAssignModal] = useState<string | null>(null);
   const [confirmModal, setConfirmModal] = useState<{ type: 'single' | 'bulk'; ids: string[] } | null>(null);
   const [editModal, setEditModal] = useState<Lead | null>(null);
+  const [createModal, setCreateModal] = useState(false);
+  const [createForm, setCreateForm] = useState<LeadFormData>({
+    nombre_completo: '',
+    email: '',
+    telefono: '',
+    empresa: '',
+    origen: 'web_chat',
+  });
   const [editForm, setEditForm] = useState<LeadFormData>({
     nombre_completo: '',
     email: '',
@@ -86,9 +94,11 @@ export default function Leads() {
       if (filters.estado) params.estado = filters.estado;
       if (filters.origen) params.origen = filters.origen;
       if (filters.score_minimo > 0) {
-        console.log('Score filter:', filters.score_minimo);
         params.score_minimo = filters.score_minimo;
       }
+      if (filters.vendedor_id) params.vendedor_id = filters.vendedor_id;
+      
+      // Las fechas ya están en formato YYYY-MM-DD del input[type="date"]
       if (filters.fecha_desde) params.fecha_desde = filters.fecha_desde;
       if (filters.fecha_hasta) params.fecha_hasta = filters.fecha_hasta;
       
@@ -188,6 +198,30 @@ export default function Leads() {
     } catch (error) {
       console.error('Error updating lead:', error);
       showToast('Error al actualizar el lead', 'error');
+    }
+  };
+
+  const handleCreateLead = async () => {
+    if (!createForm.nombre_completo || !createForm.email) {
+      showToast('Nombre y email son obligatorios', 'error');
+      return;
+    }
+    try {
+      const newLead = await leadsService.createLead(createForm);
+      setLeads([newLead, ...leads]);
+      setTotal(total + 1);
+      setCreateModal(false);
+      setCreateForm({
+        nombre_completo: '',
+        email: '',
+        telefono: '',
+        empresa: '',
+        origen: 'web_chat',
+      });
+      showToast('Lead creado correctamente', 'success');
+    } catch (error) {
+      console.error('Error creating lead:', error);
+      showToast('Error al crear el lead', 'error');
     }
   };
 
@@ -387,6 +421,80 @@ export default function Leads() {
         </div>
       )}
 
+      {/* Create Modal */}
+      {createModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full">
+            <h3 className="text-lg font-semibold text-slate-800 mb-4">Crear Nuevo Lead</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Nombre completo *</label>
+                <input
+                  type="text"
+                  value={createForm.nombre_completo}
+                  onChange={(e) => setCreateForm({ ...createForm, nombre_completo: e.target.value })}
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Email *</label>
+                <input
+                  type="email"
+                  value={createForm.email}
+                  onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })}
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Teléfono</label>
+                <input
+                  type="tel"
+                  value={createForm.telefono}
+                  onChange={(e) => setCreateForm({ ...createForm, telefono: e.target.value })}
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Empresa</label>
+                <input
+                  type="text"
+                  value={createForm.empresa}
+                  onChange={(e) => setCreateForm({ ...createForm, empresa: e.target.value })}
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Origen</label>
+                <select
+                  value={createForm.origen}
+                  onChange={(e) => setCreateForm({ ...createForm, origen: e.target.value })}
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="web_chat">Web Chat</option>
+                  <option value="whatsapp">WhatsApp</option>
+                  <option value="api">API</option>
+                  <option value="otros">Otros</option>
+                </select>
+              </div>
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => setCreateModal(false)}
+                className="flex-1 py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleCreateLead}
+                className="flex-1 py-2.5 px-4 bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-xl transition-colors"
+              >
+                Crear
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Toast Notifications */}
       <div className="fixed top-4 right-4 z-50 space-y-2">
         {toasts.map((toast) => (
@@ -418,6 +526,15 @@ export default function Leads() {
           <p className="text-slate-500 mt-1">Gestiona tus prospectos ({total} total)</p>
         </div>
         <div className="flex gap-2">
+          <button
+            onClick={() => setCreateModal(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl transition-colors"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Crear Lead
+          </button>
           {selectedLeads.size > 0 && (
             <button
               onClick={handleBulkDelete}
@@ -430,92 +547,117 @@ export default function Leads() {
             </button>
           )}
           <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="lg:hidden flex items-center justify-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-xl text-slate-600"
+            onClick={handleBulkDelete}
+            className="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-xl transition-colors"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
             </svg>
-            Filtros
+            Eliminar ({selectedLeads.size})
           </button>
         </div>
       </div>
 
       {/* Search & Filters */}
       <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4">
-        <div className="flex flex-col lg:flex-row gap-4">
-          <div className="flex-1 flex gap-2">
+        {/* Search Row */}
+        <div className="flex gap-2 mb-4">
+          <div className="relative flex-1">
             <input
               type="text"
-              placeholder="Buscar leads..."
+              placeholder="Buscar por nombre, email, teléfono o empresa..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-              className="flex-1 px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <button
+            onClick={handleSearch}
+            className="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl transition-colors"
+          >
+            Buscar
+          </button>
+        </div>
+
+        {/* Filters Row - always visible */}
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-sm text-slate-500 mr-2">Filtros:</span>
+          
+          <select
+            value={filters.estado}
+            onChange={(e) => { setFilters({ ...filters, estado: e.target.value }); setPagination({ ...pagination, page: 1 }); }}
+            className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Estado</option>
+            <option value="nuevo">Nuevo</option>
+            <option value="asignado">Asignado</option>
+            <option value="calificado">Calificado</option>
+            <option value="vendido">Vendido</option>
+            <option value="descartado">Descartado</option>
+          </select>
+
+          <select
+            value={filters.vendedor_id}
+            onChange={(e) => { setFilters({ ...filters, vendedor_id: e.target.value }); setPagination({ ...pagination, page: 1 }); }}
+            className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Vendedor</option>
+            {vendedores.map((v) => (
+              <option key={v.id} value={v.id}>{v.nombre_completo}</option>
+            ))}
+          </select>
+
+          <select
+            value={filters.origen}
+            onChange={(e) => { setFilters({ ...filters, origen: e.target.value }); setPagination({ ...pagination, page: 1 }); }}
+            className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Origen</option>
+            <option value="web_chat">Web Chat</option>
+            <option value="whatsapp">WhatsApp</option>
+            <option value="api">API</option>
+            <option value="otros">Otros</option>
+          </select>
+
+          <select
+            value={filters.score_minimo}
+            onChange={(e) => { setFilters({ ...filters, score_minimo: Number(e.target.value) }); setPagination({ ...pagination, page: 1 }); }}
+            className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value={0}>Score</option>
+            <option value={35}>≥ 35</option>
+            <option value={25}>≥ 25</option>
+            <option value={10}>≥ 10</option>
+          </select>
+
+          <div className="flex items-center gap-2">
+            <input
+              type="date"
+              value={filters.fecha_desde}
+              onChange={(e) => { setFilters({ ...filters, fecha_desde: e.target.value }); setPagination({ ...pagination, page: 1 }); }}
+              className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <span className="text-slate-400">-</span>
+            <input
+              type="date"
+              value={filters.fecha_hasta}
+              onChange={(e) => { setFilters({ ...filters, fecha_hasta: e.target.value }); setPagination({ ...pagination, page: 1 }); }}
+              className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          {(filters.estado || filters.vendedor_id || filters.origen || filters.score_minimo > 0 || filters.fecha_desde || filters.fecha_hasta) && (
             <button
-              onClick={handleSearch}
-              className="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl transition-colors"
+              onClick={() => { setFilters({ estado: '', origen: '', score_minimo: 0, vendedor_id: '', fecha_desde: '', fecha_hasta: '' }); setPagination({ ...pagination, page: 1 }); }}
+              className="px-3 py-2 text-sm text-red-500 hover:bg-red-50 rounded-lg transition-colors"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
+              Limpiar
             </button>
-          </div>
-
-          <div className={`lg:flex gap-3 ${showFilters ? 'flex flex-col' : 'hidden'}`}>
-            <div className="flex gap-3 flex-wrap">
-              <select
-                value={filters.estado}
-                onChange={(e) => setFilters({ ...filters, estado: e.target.value })}
-                className="px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Todos los estados</option>
-                <option value="nuevo">Nuevo</option>
-                <option value="asignado">Asignado</option>
-                <option value="calificado">Calificado</option>
-                <option value="vendido">Vendido</option>
-                <option value="descartado">Descartado</option>
-              </select>
-
-              <select
-                value={filters.origen}
-                onChange={(e) => setFilters({ ...filters, origen: e.target.value })}
-                className="px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Todos los orígenes</option>
-                <option value="web_chat">Web Chat</option>
-                <option value="whatsapp">WhatsApp</option>
-                <option value="api">API</option>
-              </select>
-
-              <select
-                value={filters.score_minimo}
-                onChange={(e) => setFilters({ ...filters, score_minimo: Number(e.target.value) })}
-                className="px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value={0}>Cualquier score</option>
-                <option value={70}>Score ≥ 70</option>
-                <option value={40}>Score ≥ 40</option>
-              </select>
-            </div>
-            <div className="flex gap-3 flex-wrap">
-              <input
-                type="date"
-                value={filters.fecha_desde}
-                onChange={(e) => setFilters({ ...filters, fecha_desde: e.target.value })}
-                className="px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Fecha desde"
-              />
-              <input
-                type="date"
-                value={filters.fecha_hasta}
-                onChange={(e) => setFilters({ ...filters, fecha_hasta: e.target.value })}
-                className="px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Fecha hasta"
-              />
-            </div>
-          </div>
+          )}
         </div>
       </div>
 

@@ -11,23 +11,56 @@ interface Stats {
   tasa_conversion: number;
 }
 
+type Period = 'diario' | 'semanal' | 'mensual' | 'acumulado';
+
 export default function Home() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [period, setPeriod] = useState<Period>('acumulado');
+
+  const getDateRange = (period: Period): { fecha_desde?: string; fecha_hasta?: string } => {
+    const today = new Date();
+    const formatDate = (date: Date) => date.toISOString().split('T')[0];
+    
+    switch (period) {
+      case 'diario':
+        return { fecha_desde: formatDate(today), fecha_hasta: formatDate(today) };
+      case 'semanal':
+        const weekStart = new Date(today);
+        weekStart.setDate(today.getDate() - 7);
+        return { fecha_desde: formatDate(weekStart), fecha_hasta: formatDate(today) };
+      case 'mensual':
+        const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+        return { fecha_desde: formatDate(monthStart), fecha_hasta: formatDate(today) };
+      case 'acumulado':
+      default:
+        return {};
+    }
+  };
+
+  const fetchStats = async (period: Period) => {
+    setLoading(true);
+    try {
+      const dateRange = getDateRange(period);
+      const data = await leadsService.getStats(dateRange);
+      setStats(data);
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const data = await leadsService.getStats();
-        setStats(data);
-      } catch (error) {
-        console.error('Error fetching stats:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchStats();
-  }, []);
+    fetchStats(period);
+  }, [period]);
+
+  const periodLabels: Record<Period, string> = {
+    diario: 'Hoy',
+    semanal: 'Últimos 7 días',
+    mensual: 'Este mes',
+    acumulado: 'Acumulado',
+  };
 
   if (loading) {
     return (
@@ -54,9 +87,28 @@ export default function Home() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl lg:text-3xl font-bold text-slate-800">Dashboard</h1>
-        <p className="text-slate-500 mt-1">Resumen de tu gestión de leads</p>
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl lg:text-3xl font-bold text-slate-800">Dashboard</h1>
+          <p className="text-slate-500 mt-1">Resumen de tu gestión de leads</p>
+        </div>
+        
+        {/* Period Selector */}
+        <div className="flex gap-2 bg-white rounded-xl p-1 shadow-sm border border-slate-100">
+          {(['diario', 'semanal', 'mensual', 'acumulado'] as Period[]).map((p) => (
+            <button
+              key={p}
+              onClick={() => setPeriod(p)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                period === p
+                  ? 'bg-emerald-500 text-white shadow-md'
+                  : 'text-slate-600 hover:bg-slate-50'
+              }`}
+            >
+              {periodLabels[p]}
+            </button>
+          ))}
+        </div>
       </div>
       
       {/* Stats Grid */}

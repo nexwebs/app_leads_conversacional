@@ -31,8 +31,8 @@ interface WorkflowCanvasProps {
   stats: LeadStats;
 }
 
-const NODE_W = 172;
-const NODE_H = 88;
+const NODE_W = 150;
+const NODE_H = 80;
 
 const WORKFLOW_STATES: WorkflowState[] = [
   {
@@ -43,7 +43,7 @@ const WORKFLOW_STATES: WorkflowState[] = [
     accent: '#3b82f6',
     glow: 'rgba(59,130,246,0.25)',
     text: '#1d4ed8',
-    x: 40,
+    x: 20,
     y: 130,
   },
   {
@@ -54,7 +54,7 @@ const WORKFLOW_STATES: WorkflowState[] = [
     accent: '#f59e0b',
     glow: 'rgba(245,158,11,0.25)',
     text: '#b45309',
-    x: 250,
+    x: 200,
     y: 40,
   },
   {
@@ -65,7 +65,7 @@ const WORKFLOW_STATES: WorkflowState[] = [
     accent: '#8b5cf6',
     glow: 'rgba(139,92,246,0.25)',
     text: '#6d28d9',
-    x: 460,
+    x: 380,
     y: 130,
   },
   {
@@ -76,7 +76,7 @@ const WORKFLOW_STATES: WorkflowState[] = [
     accent: '#10b981',
     glow: 'rgba(16,185,129,0.25)',
     text: '#047857',
-    x: 250,
+    x: 200,
     y: 230,
   },
   {
@@ -87,7 +87,7 @@ const WORKFLOW_STATES: WorkflowState[] = [
     accent: '#ef4444',
     glow: 'rgba(239,68,68,0.2)',
     text: '#b91c1c',
-    x: 670,
+    x: 560,
     y: 130,
   },
 ];
@@ -199,7 +199,7 @@ export default function WorkflowCanvas({ stats }: WorkflowCanvasProps) {
     : [];
   const activeIds = new Set(activeTransitions.flatMap(t => [t.from, t.to]));
 
-  const SVG_W = 880;
+  const SVG_W = 750;
   const SVG_H = 360;
 
   const pairKey = (a: string, b: string) => [a, b].sort().join('-');
@@ -246,12 +246,12 @@ export default function WorkflowCanvas({ stats }: WorkflowCanvasProps) {
         }
       `}</style>
 
-      <div className="px-6 pt-5 pb-3 flex items-start justify-between border-b border-white/[0.06]">
+      <div className="px-4 pt-4 pb-3 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 border-b border-white/[0.06]">
         <div>
           <p className="text-[11px] font-semibold tracking-[0.15em] text-white/30 uppercase mb-1">Pipeline</p>
           <h2 className="text-lg font-semibold text-white/90">Workflow de Leads</h2>
         </div>
-        <div className="flex items-center gap-3 mt-1">
+        <div className="flex items-center gap-3 flex-wrap">
           {(['primary', 'danger', 'secondary'] as const).map(type => (
             <span key={type} className="flex items-center gap-1.5 text-[11px] text-white/40">
               <span
@@ -264,19 +264,20 @@ export default function WorkflowCanvas({ stats }: WorkflowCanvasProps) {
               {type === 'primary' ? 'Avance' : type === 'danger' ? 'Descarte' : 'Reactivar'}
             </span>
           ))}
-          <span className="ml-2 text-xs text-white/25 border border-white/10 rounded-lg px-2 py-1">
+          <span className="ml-0 sm:ml-2 text-xs text-white/25 border border-white/10 rounded-lg px-2 py-1">
             {total} leads
           </span>
         </div>
       </div>
 
-      <div className="overflow-x-auto p-4">
-        <svg
-          width={SVG_W}
-          height={SVG_H}
-          viewBox={`0 0 ${SVG_W} ${SVG_H}`}
-          className="min-w-[880px]"
-        >
+      <div className="overflow-x-auto p-2 sm:p-4">
+        <div className="min-w-[750px]">
+          <svg
+            width={750}
+            height={360}
+            viewBox="0 0 750 360"
+            className="w-full h-auto"
+          >
           <defs>
             {Object.entries({ ...TRANSITION_COLORS, ...ACTIVE_COLORS }).map(([key, color]) => (
               <ArrowMarker key={key} id={`arrow-${key}`} color={color} />
@@ -475,6 +476,7 @@ export default function WorkflowCanvas({ stats }: WorkflowCanvasProps) {
             );
           })}
         </svg>
+        </div>
       </div>
 
       {selected && (() => {

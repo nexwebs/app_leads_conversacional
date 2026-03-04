@@ -106,6 +106,9 @@ async def listar_leads(
     score_minimo: Optional[int] = Query(None, ge=0, le=100, description="Score mínimo"),
     fecha_desde: Optional[str] = Query(None, description="Fecha desde (YYYY-MM-DD)"),
     fecha_hasta: Optional[str] = Query(None, description="Fecha hasta (YYYY-MM-DD)"),
+    vendedor_id: Optional[str] = Query(
+        None, description="Filtrar por vendedor asignado"
+    ),
     limit: int = Query(50, ge=1, le=200, description="Cantidad máxima de resultados"),
     offset: int = Query(0, ge=0, description="Offset para paginación"),
     db: AsyncSession = Depends(get_db),
@@ -129,22 +132,26 @@ async def listar_leads(
     if score_minimo is not None:
         conditions.append(Lead.score_total >= score_minimo)
 
-    # Filtros de fecha
+    # Filtro por vendedor
+    if vendedor_id:
+        try:
+            vendedor_uuid = UUID(vendedor_id)
+            conditions.append(Lead.vendedor_asignado_id == vendedor_uuid)
+        except ValueError:
+            pass
+
+    # Filtros de fecha - usar CAST para comparar solo fechas sin hora
     if fecha_desde:
         try:
-            fechaDesde = datetime.strptime(fecha_desde, "%Y-%m-%d").replace(
-                tzinfo=timezone.utc
-            )
-            conditions.append(Lead.created_at >= fechaDesde)
+            fechaDesde = datetime.strptime(fecha_desde, "%Y-%m-%d")
+            conditions.append(func.date(Lead.created_at) >= fechaDesde.date())
         except ValueError:
             pass
 
     if fecha_hasta:
         try:
-            fechaHasta = datetime.strptime(fecha_hasta, "%Y-%m-%d").replace(
-                tzinfo=timezone.utc, hour=23, minute=59, second=59
-            )
-            conditions.append(Lead.created_at <= fechaHasta)
+            fechaHasta = datetime.strptime(fecha_hasta, "%Y-%m-%d")
+            conditions.append(func.date(Lead.created_at) <= fechaHasta.date())
         except ValueError:
             pass
 
@@ -200,37 +207,89 @@ async def listar_vendedores(
 # ============= ESTADÍSTICAS DE LEADS =============
 @router.get("/stats/resumen")
 async def estadisticas_leads(
+    fecha_desde: Optional[str] = Query(None, description="Fecha desde (YYYY-MM-DD)"),
+    fecha_hasta: Optional[str] = Query(None, description="Fecha hasta (YYYY-MM-DD)"),
     db: AsyncSession = Depends(get_db),
     current_user: Usuario = Depends(get_current_active_user),
 ):
     """
-    Obtener estadísticas generales de leads
+    Obtener estadísticas de leads con filtros opcionales de fecha
     """
+    # Construir condiciones de fecha
+    fecha_conditions = []
+    if fecha_desde:
+        try:
+            fechaDesde = datetime.strptime(fecha_desde, "%Y-%m-%d")
+            fecha_conditions.append(func.date(Lead.created_at) >= fechaDesde.date())
+        except ValueError:
+            pass
+
+    if fecha_hasta:
+        try:
+            fechaHasta = datetime.strptime(fecha_hasta, "%Y-%m-%d")
+            fecha_conditions.append(func.date(Lead.created_at) <= fechaHasta.date())
+        except ValueError:
+            pass
+
+    # Base query con filtros de fecha
+    base_filter = and_(*fecha_conditions) if fecha_conditions else True
+
     # Conteo por estado
-    result = await db.execute(
-        select(Lead.estado, func.count(Lead.id).label("cantidad")).group_by(Lead.estado)
-    )
+    if base_filter is True:
+        result = await db.execute(
+            select(Lead.estado, func.count(Lead.id).label("cantidad")).group_by(
+                Lead.estado
+            )
+        )
+    else:
+        result = await db.execute(
+            select(Lead.estado, func.count(Lead.id).label("cantidad"))
+            .where(base_filter)
+            .group_by(Lead.estado)
+        )
 
     por_estado = {row.estado: row.cantidad for row in result}
 
     # Conteo por origen
-    result_origen = await db.execute(
-        select(Lead.origen, func.count(Lead.id).label("cantidad")).group_by(Lead.origen)
-    )
+    if base_filter is True:
+        result_origen = await db.execute(
+            select(Lead.origen, func.count(Lead.id).label("cantidad")).group_by(
+                Lead.origen
+            )
+        )
+    else:
+        result_origen = await db.execute(
+            select(Lead.origen, func.count(Lead.id).label("cantidad"))
+            .where(base_filter)
+            .group_by(Lead.origen)
+        )
 
     por_origen = {row.origen: row.cantidad for row in result_origen}
 
     # Score promedio
-    result_score = await db.execute(select(func.avg(Lead.score_total)))
+    if base_filter is True:
+        result_score = await db.execute(select(func.avg(Lead.score_total)))
+    else:
+        result_score = await db.execute(
+            select(func.avg(Lead.score_total)).where(base_filter)
+        )
     score_promedio = result_score.scalar() or 0
 
     # Total de leads
-    result_total = await db.execute(select(func.count(Lead.id)))
+    if base_filter is True:
+        result_total = await db.execute(select(func.count(Lead.id)))
+    else:
+        result_total = await db.execute(select(func.count(Lead.id)).where(base_filter))
     total_leads = result_total.scalar()
 
     # Leads de alta prioridad (score >= 70)
+    alta_prioridad_filter = (
+        and_(base_filter, Lead.score_total >= 70)
+        if base_filter is not True
+        else Lead.score_total >= 70
+    )
     result_alta_prioridad = await db.execute(
-        select(func.count(Lead.id)).where(Lead.score_total >= 70)
+        select(func.count(Lead.id)).where(alta_prioridad_filter)
     )
     alta_prioridad = result_alta_prioridad.scalar()
 
