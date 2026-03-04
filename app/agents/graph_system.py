@@ -576,16 +576,30 @@ RESPONDE SOLO JSON CON LOS CAMPOS FALTANTES:"""
         msg_count = state["mensaje_count"]
         user_msg = self._get_user_message(state)
 
+        print(
+            f"DEBUG: msg_count={msg_count}, user_msg='{user_msg}', is_first={state.get('is_first_interaction')}"
+        )
+
         has_nombre = bool(extracted.get("nombre"))
         has_sector = bool(extracted.get("sector"))
         has_email = bool(extracted.get("email"))
         has_telefono = bool(extracted.get("telefono"))
         has_contact = has_email or has_telefono
 
+        print(
+            f"DEBUG estrategia: msg_count={msg_count}, nombre={extracted.get('nombre')}, sector={has_sector}, email={has_email}, telefono={has_telefono}"
+        )
+
+        # SALUDO FIJO PARA PRIMERA INTERACCIÓN - retorna temprano
+        if msg_count == 0 and not user_msg:
+            return state
+
         despedida_kw = ["adios", "gracias chao", "hasta luego", "bye"]
         if any(kw in user_msg.lower() for kw in despedida_kw) and msg_count > 1:
             state["should_close"] = True
             strategy = "farewell"
+        elif msg_count == 0 and not user_msg:
+            strategy = "greeting"
         elif state["is_first_interaction"]:
             strategy = "greeting"
         elif (

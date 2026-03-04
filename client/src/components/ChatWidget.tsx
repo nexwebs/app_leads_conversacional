@@ -29,7 +29,11 @@ export default function ChatWidget() {
   }, [messages]);
 
   const generateSessionId = () => {
-    return 'ws_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    const stored = localStorage.getItem('chat_session_id');
+    if (stored) return stored;
+    const newId = 'ws_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    localStorage.setItem('chat_session_id', newId);
+    return newId;
   };
 
   const renderMessage = (text: string, role: Message['role']) => {
