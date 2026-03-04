@@ -61,22 +61,16 @@ async def crear_lead(lead_data: LeadCreate, db: AsyncSession = Depends(get_db)):
     # Verificar si ya existe un lead con ese email o teléfono
     existing_lead = None
     if lead_data.email:
-        result = await db.execute(select(Lead).where(Lead.email == lead_data.email))
+        result = await db.execute(
+            select(Lead).where(Lead.email == lead_data.email).limit(1)
+        )
         existing_lead = result.scalar_one_or_none()
 
     if existing_lead:
-        # Si el lead ya existe, actualizar sus datos
-        for field, value in lead_data.model_dump(exclude_unset=True).items():
-            if value is not None:
-                setattr(existing_lead, field, value)
-
-        existing_lead.updated_at = datetime.now(timezone.utc)
-        existing_lead.ultima_interaccion = datetime.now(timezone.utc)
-
-        await db.commit()
-        await db.refresh(existing_lead)
-
-        return LeadResponse.from_orm_model(existing_lead)
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Ya existe un lead con este email",
+        )
 
     # Crear nuevo lead
     new_lead = Lead(

@@ -94,7 +94,14 @@ export default function ContactForm({
 
       const data = await res.json();
 
-      if (!res.ok) throw new Error(data.detail || 'Error al enviar');
+      if (!res.ok) {
+        if (res.status === 409) {
+          showMessage('error', 'Este email ya está registrado');
+        } else {
+          throw new Error(data.detail || 'Error al enviar');
+        }
+        return;
+      }
 
       showMessage('success');
       form.reset();
