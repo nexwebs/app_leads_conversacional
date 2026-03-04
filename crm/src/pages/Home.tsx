@@ -39,7 +39,7 @@ export default function Home() {
 
   const estadoColours: Record<string, string> = {
     nuevo: '#3b82f6',
-    calificando: '#f59e0b',
+    asignado: '#f59e0b',
     calificado: '#8b5cf6',
     vendido: '#10b981',
     descartado: '#ef4444',
@@ -113,7 +113,7 @@ export default function Home() {
         <WorkflowCanvas 
           stats={{
             nuevo: stats.por_estado.nuevo || 0,
-            calificando: stats.por_estado.calificando || 0,
+            asignado: stats.por_estado.asignado || 0,
             calificado: stats.por_estado.calificado || 0,
             vendido: stats.por_estado.vendido || 0,
             descartado: stats.por_estado.descartado || 0,

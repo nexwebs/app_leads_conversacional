@@ -21,7 +21,7 @@ interface Transition {
 
 interface LeadStats {
   nuevo: number;
-  calificando: number;
+  asignado: number;
   calificado: number;
   vendido: number;
   descartado: number;
@@ -47,8 +47,8 @@ const WORKFLOW_STATES: WorkflowState[] = [
     y: 130,
   },
   {
-    id: 'calificando',
-    label: 'Calificando',
+    id: 'asignado',
+    label: 'Asignado',
     description: 'En evaluación',
     icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
     accent: '#f59e0b',
@@ -93,13 +93,13 @@ const WORKFLOW_STATES: WorkflowState[] = [
 ];
 
 const TRANSITIONS: Transition[] = [
-  { from: 'nuevo', to: 'calificando', label: 'Iniciar', type: 'primary' },
+  { from: 'nuevo', to: 'asignado', label: 'Iniciar', type: 'primary' },
   { from: 'nuevo', to: 'descartado', label: 'Descartar', type: 'danger' },
-  { from: 'calificando', to: 'calificado', label: 'Completar', type: 'primary' },
-  { from: 'calificando', to: 'descartado', label: 'Descartar', type: 'danger' },
+  { from: 'asignado', to: 'calificado', label: 'Completar', type: 'primary' },
+  { from: 'asignado', to: 'descartado', label: 'Descartar', type: 'danger' },
   { from: 'calificado', to: 'vendido', label: 'Cerrar venta', type: 'primary' },
   { from: 'calificado', to: 'descartado', label: 'Descartar', type: 'danger' },
-  { from: 'vendido', to: 'calificando', label: 'Reactivar', type: 'secondary' },
+  { from: 'vendido', to: 'asignado', label: 'Reactivar', type: 'secondary' },
 ];
 
 const getStateById = (id: string) => WORKFLOW_STATES.find(s => s.id === id)!;

@@ -609,7 +609,7 @@ export default function Leads() {
                         )}
                       </td>
                       <td className="px-4 lg:px-6 py-4 text-sm text-slate-500 hidden lg:table-cell">
-                        {lead.created_at ? new Date(lead.created_at).toLocaleDateString() : '-'}
+                        {lead.created_at ? new Date(lead.created_at).toLocaleDateString('es-PE', { day: '2-digit', month: 'short', year: 'numeric' }) : '-'}
                       </td>
                       <td className="px-4 lg:px-6 py-4">
                         <div className="flex items-center justify-end gap-2">
