@@ -50,6 +50,7 @@ env/
 # Python version
 .python-version
 DOCUMENTACION.md
+AGENTS.md
 # ========================
 # NODE/REACT (client/)
 # ========================
