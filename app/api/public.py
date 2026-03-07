@@ -2,18 +2,18 @@
 app/api/public.py
 Endpoints con generación directa (sin BackgroundTasks ni schedulers)
 """
+
 from fastapi import APIRouter
-from fastapi.responses import FileResponse
+from fastapi.responses import Response
 
 router = APIRouter()
 
+
 @router.get("/favicon.ico", include_in_schema=False)
 async def favicon():
-    return FileResponse(
-        "static/favicon.ico",
+    return Response(
+        content=b"",
         media_type="image/x-icon",
-        headers={
-            "Cache-Control": "public, max-age=3600",
-            "ETag": "v1"
-        }
+        status_code=204,
+        headers={"Cache-Control": "public, max-age=3600"},
     )
